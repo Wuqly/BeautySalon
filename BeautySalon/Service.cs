@@ -62,6 +62,26 @@ namespace BeautySalon
             button3.Font = myFont1;
         }
 
+        public Boolean chekService()
+        {
+            DataTable dataTable = new DataTable();
+            SqlDataAdapter ad = new SqlDataAdapter();
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Service where Логин = '" + textBox1.Text + "'", sqlConn);
+            ad.SelectCommand = sqlCommand;
+            ad.Fill(dataTable);
+            if (dataTable.Rows.Count > 0)
+            {
+                MessageBox.Show("Такая услуга уже существует",
+                "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
         private void ClearControls()
         {
             Id = 0;
@@ -84,6 +104,10 @@ namespace BeautySalon
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (chekService())
+            {
+                return;
+            }
             if (string.IsNullOrWhiteSpace(textBox1.Text) || string.IsNullOrWhiteSpace(textBox2.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
