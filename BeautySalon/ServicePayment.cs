@@ -24,7 +24,7 @@ namespace BeautySalon
 {
     public partial class ServicePayment : Form
     {
-        SqlConnection sqlConn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Aarone\\Desktop\\BeautySalon\\BeautySalonDb.mdf;Integrated Security=True;Connect Timeout=30");
+        SqlConnection sqlConn = new SqlConnection("");
         SqlDataReader reader;
         SqlCommand cmd;
         int Id = 0;
@@ -140,8 +140,8 @@ namespace BeautySalon
             string exeFolderPath1 = AppDomain.CurrentDomain.BaseDirectory;
 
             // Определяем относительный путь к файлу docx. Предположим, файл находится в папке "docs" внутри папки с EXE.
-            string relativePath = @"docs\Check.docx";
-            string relativePath1 = @"docs\Check1.docx";
+            string relativePath = @"docs\ServiceShablon.doc";
+            string relativePath1 = @"docs\ServiceShablon1.doc";
 
             // Строим полный путь к файлу docx
             string fullPath = Path.Combine(exeFolderPath, relativePath);
@@ -152,6 +152,7 @@ namespace BeautySalon
             var price = textBox1.Text;
             var sale = textBox2.Text;
             var itog = textBox4.Text;
+            var IdClient = comboBox1.Text;
             var wordApp = new Microsoft.Office.Interop.Word.Application();
             wordApp.Visible = false;
             try
@@ -162,6 +163,8 @@ namespace BeautySalon
                 ReplaceWordStub("{price}", price, wordDocument);
                 ReplaceWordStub("{sale}", sale, wordDocument);
                 ReplaceWordStub("{itog}", itog, wordDocument);
+                ReplaceWordStub("{IdClient}", IdClient, wordDocument);
+                ReplaceWordStub("{itog1}", itog, wordDocument);
 
                 wordDocument.SaveAs(fullPath1);
                 wordDocument.Close();
@@ -244,6 +247,16 @@ namespace BeautySalon
             populate();
             populateService();
             populateClient();
+            if (MyConnection.type == "M")
+            {
+                toolStripMenuItem7.Visible = false;
+            }
+
+            if (MyConnection.type == "K")
+            {
+                toolStripMenuItem7.Visible = false;
+                toolStripMenuItem4.Visible = false;
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -496,6 +509,30 @@ namespace BeautySalon
         private void pictureBox3_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void textBox8_TextChanged(object sender, EventArgs e)
+        {
+            dataGridView2.ClearSelection();
+            if (!string.IsNullOrEmpty(textBox8.Text))
+            {
+                foreach (DataGridViewRow row in dataGridView2.Rows)
+                {
+                    foreach (DataGridViewCell cell in row.Cells)
+                    {
+                        if (cell.Value != null && cell.Value.ToString().ToUpper().Contains(textBox8.Text.ToUpper()))
+                        {
+                            row.Selected = true;
+                            dataGridView2.CurrentCell = cell;
+                            break;
+                        }
+                    }
+                    if (dataGridView2.SelectedCells.Count > 0)
+                    {
+                        break;
+                    }
+                }
+            }
         }
     }
 }

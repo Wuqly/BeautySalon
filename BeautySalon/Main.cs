@@ -16,8 +16,6 @@ namespace BeautySalon
 {
     public partial class Main : Form
     {
-        SqlConnection sqlConn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Aarone\\Desktop\\BeautySalon\\BeautySalonDb.mdf;Integrated Security=True;Connect Timeout=30");
-        int Id = 0;
         private Size _initialFormSize;
         [DllImport("gdi32.dll")]
         private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont, IntPtr pdv, out uint pcFonts);
@@ -125,6 +123,7 @@ namespace BeautySalon
             if (MyConnection.type == "K")
             {
                 toolStripMenuItem7.Visible = false;
+                toolStripMenuItem4.Visible = false;
             }
         }
 

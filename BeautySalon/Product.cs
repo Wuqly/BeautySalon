@@ -17,7 +17,7 @@ namespace BeautySalon
 {
     public partial class Product : Form
     {
-        SqlConnection sqlConn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Aarone\\Desktop\\BeautySalon\\BeautySalonDb.mdf;Integrated Security=True;Connect Timeout=30");
+        SqlConnection sqlConn = new SqlConnection("");
         int Id = 0;
         private Size _initialFormSize;
 
@@ -239,6 +239,16 @@ namespace BeautySalon
         {
             populate();
             populateTypeProd();
+            if (MyConnection.type == "M")
+            {
+                toolStripMenuItem7.Visible = false;
+            }
+
+            if (MyConnection.type == "K")
+            {
+                toolStripMenuItem7.Visible = false;
+                toolStripMenuItem4.Visible = false;
+            }
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
@@ -357,6 +367,11 @@ namespace BeautySalon
         private void pictureBox3_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

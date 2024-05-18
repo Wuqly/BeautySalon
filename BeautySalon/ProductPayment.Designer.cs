@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProductPayment));
             this.panel1 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
@@ -276,13 +277,12 @@
             this.dataGridView2.RowTemplate.Height = 24;
             this.dataGridView2.Size = new System.Drawing.Size(944, 210);
             this.dataGridView2.TabIndex = 1;
+            this.dataGridView2.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellClick);
             // 
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.textBox3);
-            this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.button5);
             this.groupBox1.Controls.Add(this.groupBox4);
             this.groupBox1.Controls.Add(this.dateTimePicker1);
@@ -297,7 +297,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.groupBox1.Location = new System.Drawing.Point(12, 373);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(916, 182);
+            this.groupBox1.Size = new System.Drawing.Size(916, 210);
             this.groupBox1.TabIndex = 55;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Создать запись";
@@ -322,6 +322,8 @@
             // groupBox4
             // 
             this.groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.groupBox4.Controls.Add(this.label6);
+            this.groupBox4.Controls.Add(this.textBox3);
             this.groupBox4.Controls.Add(this.label2);
             this.groupBox4.Controls.Add(this.label9);
             this.groupBox4.Controls.Add(this.label1);
@@ -331,7 +333,7 @@
             this.groupBox4.Controls.Add(this.textBox2);
             this.groupBox4.Location = new System.Drawing.Point(266, 17);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(267, 159);
+            this.groupBox4.Size = new System.Drawing.Size(267, 187);
             this.groupBox4.TabIndex = 55;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Расчитать сумму";
@@ -384,7 +386,7 @@
             this.button4.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Black;
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button4.ForeColor = System.Drawing.Color.White;
-            this.button4.Location = new System.Drawing.Point(73, 114);
+            this.button4.Location = new System.Drawing.Point(68, 145);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(126, 36);
             this.button4.TabIndex = 48;
@@ -414,6 +416,7 @@
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(149, 22);
             this.dateTimePicker1.TabIndex = 54;
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
             // comboBox2
             // 
@@ -539,19 +542,20 @@
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(330, 22);
             this.textBox8.TabIndex = 41;
+            this.textBox8.TextChanged += new System.EventHandler(this.textBox8_TextChanged);
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(150, 121);
+            this.textBox3.Location = new System.Drawing.Point(166, 107);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(110, 22);
+            this.textBox3.Size = new System.Drawing.Size(90, 22);
             this.textBox3.TabIndex = 60;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Comic Sans MS", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(23, 124);
+            this.label6.Location = new System.Drawing.Point(6, 110);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(122, 19);
@@ -563,14 +567,16 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(950, 580);
+            this.ClientSize = new System.Drawing.Size(950, 614);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.menuStrip2);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ProductPayment";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ProductPayment";
             this.Load += new System.EventHandler(this.ProductPayment_Load);
             this.panel1.ResumeLayout(false);

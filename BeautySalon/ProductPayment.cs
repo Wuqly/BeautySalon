@@ -1,15 +1,20 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Word;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MetroFramework.Forms;
+using MetroFramework.Fonts;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace BeautySalon
@@ -17,7 +22,7 @@ namespace BeautySalon
     public partial class ProductPayment : Form
     {
 
-        SqlConnection sqlConn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Aarone\\Desktop\\BeautySalon\\BeautySalonDb.mdf;Integrated Security=True;Connect Timeout=30");
+        SqlConnection sqlConn = new SqlConnection("");
         SqlDataReader reader;
         SqlCommand cmd;
         int Id = 0;
@@ -31,6 +36,7 @@ namespace BeautySalon
             InitializeComponent();
             _initialFormSize = this.Size;
 
+
             // Загрузка шрифта
             byte[] fontData = Properties.Resources.midium; // Измените "YourFontFile" на имя вашего файла ресурса шрифта
             IntPtr fontPtr = Marshal.AllocCoTaskMem(fontData.Length);
@@ -39,7 +45,7 @@ namespace BeautySalon
             fonts.AddMemoryFont(fontPtr, fontData.Length);
             AddFontMemResourceEx(fontPtr, (uint)fontData.Length, IntPtr.Zero, out dummy);
             Marshal.FreeCoTaskMem(fontPtr);
-            Font myFont = new Font(fonts.Families[0], 14.0F);
+            System.Drawing.Font myFont = new System.Drawing.Font(fonts.Families[0], 14.0F);
             menuStrip2.Font = myFont;
             label4.Font = myFont;
 
@@ -51,7 +57,7 @@ namespace BeautySalon
             fonts.AddMemoryFont(fontPtr1, fontData1.Length);
             AddFontMemResourceEx(fontPtr1, (uint)fontData1.Length, IntPtr.Zero, out dummy1);
             Marshal.FreeCoTaskMem(fontPtr1);
-            Font myFont1 = new Font(fonts.Families[0], 10.0F);
+            System.Drawing.Font myFont1 = new System.Drawing.Font(fonts.Families[0], 10.0F);
             groupBox1.Font = myFont1;
             groupBox2.Font = myFont1;
             groupBox3.Font = myFont1;
@@ -62,6 +68,7 @@ namespace BeautySalon
             label9.Font = myFont1;
             label1.Font = myFont1;
             label2.Font = myFont1;
+            label6.Font = myFont1;
             button1.Font = myFont1;
             button2.Font = myFont1;
             button3.Font = myFont1;
@@ -69,11 +76,72 @@ namespace BeautySalon
             button5.Font = myFont1;
         }
 
+
+
         private void pictureBox5_Click(object sender, EventArgs e)
         {
             Sign s = new Sign();
             this.Hide();
             s.Show();
+        }
+
+        private void ReplaceWordStub(string stubToReplace, string text, Microsoft.Office.Interop.Word.Document wordDocument)
+        {
+            var range = wordDocument.Content;
+            range.Find.ClearFormatting();
+            range.Find.Execute(FindText: stubToReplace, ReplaceWith: text);
+        }
+
+        private void OpenDocxFile()
+        {
+            // Получаем полный путь к директории исполняемого файла приложения
+            string exeFolderPath = AppDomain.CurrentDomain.BaseDirectory;
+            string exeFolderPath1 = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Определяем относительный путь к файлу docx. Предположим, файл находится в папке "docs" внутри папки с EXE.
+            string relativePath = @"docs\ProductShablon.doc";
+            string relativePath1 = @"docs\ProductShablon1.doc";
+
+            // Строим полный путь к файлу docx
+            string fullPath = Path.Combine(exeFolderPath, relativePath);
+            string fullPath1 = Path.Combine(exeFolderPath1, relativePath1);
+
+            var product = comboBox2.Text;
+            var data1 = dateTimePicker1.Value.ToShortDateString();
+            var price = textBox1.Text;
+            var sale = textBox2.Text;
+            var kolvo = textBox3.Text;
+            var itog = textBox4.Text;
+            var IdClient = comboBox1.Text;
+            var wordApp = new Microsoft.Office.Interop.Word.Application();
+            wordApp.Visible = false;
+            try
+            {
+                var wordDocument = wordApp.Documents.Open(fullPath);
+                ReplaceWordStub("{product}", product, wordDocument);
+                ReplaceWordStub("{data1}", data1, wordDocument);
+                ReplaceWordStub("{price}", price, wordDocument);
+                ReplaceWordStub("{sale}", sale, wordDocument);
+                ReplaceWordStub("{kolvo}", kolvo, wordDocument);
+                ReplaceWordStub("{itog}", itog, wordDocument);
+                ReplaceWordStub("{IdClient}", IdClient, wordDocument);
+                ReplaceWordStub("{itog1}", itog, wordDocument);
+
+                wordDocument.SaveAs(fullPath1);
+                wordDocument.Close();
+                Process.Start(fullPath1);
+
+            }
+            catch
+            {
+                MessageBox.Show("Произошла ошибка");
+            }
+
+
+            finally
+            {
+                wordApp.Quit();
+            }
         }
 
         private void pictureBox4_Click(object sender, EventArgs e)
@@ -103,17 +171,19 @@ namespace BeautySalon
             textBox4.Text = "";
             textBox1.Text = "";
             textBox2.Text = "";
+            textBox3.Text = "";
+
 
         }
 
         private void populate()
         {
             sqlConn.Open();
-            string Myquary = "select * from ServicePayment";
+            string Myquary = "select * from ProductPayment";
             SqlCommand cmd = new SqlCommand(Myquary, sqlConn);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd;
-            DataTable ds = new DataTable();
+            System.Data.DataTable ds = new System.Data.DataTable();
             da.Fill(ds);
             dataGridView2.DataSource = ds;
             sqlConn.Close();
@@ -190,21 +260,78 @@ namespace BeautySalon
             populate();
             populateProduct();
             populateClient();
+            if (MyConnection.type == "M")
+            {
+                toolStripMenuItem7.Visible = false;
+            }
+
+            if (MyConnection.type == "K")
+            {
+                toolStripMenuItem7.Visible = false;
+                toolStripMenuItem4.Visible = false;
+            }
         }
+
 
         private void button4_Click(object sender, EventArgs e)
         {
+
+            string textBoxValue = textBox3.Text; // Замените yourTextBox на реальный контрол TextBox в вашем приложении
+            int textBoxNumber;
+            bool isParsed = int.TryParse(textBoxValue, out textBoxNumber);
+
+            if (!isParsed)
+            {
+                MessageBox.Show("Введенное значение не является числом!");
+                return;
+            }
+
+
+            // Запрос SQL для сравнения значений
+            string sqlQuery = "SELECT * FROM Product WHERE [Количество (шт)] < @textBoxNumber";
+
+            using (SqlConnection sqlConn = new SqlConnection(""))
+            {
+               
+                SqlCommand command = new SqlCommand(sqlQuery, sqlConn);
+                // Добавляем параметр для безопасного сравнения значений
+                command.Parameters.AddWithValue("@textBoxNumber", textBoxNumber);
+
+                try
+                {
+                    sqlConn.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        // Если есть строки, значит, есть записи, где значение из БД меньше значения из текстбокса
+                        MessageBox.Show("Введённое значение больше значения из базы.",
+                                "Ошибка ввода", MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        return;
+                    }
+                    
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Произошла ошибка при подключении к БД: " + ex.Message);
+                }
+            }
+
+        
+
             if (textBox1.Text == ""
-           || textBox2.Text == "")
+                || textBox2.Text == "")
             {
                 MessageBox.Show("Есть незаполненные поля",
                 "Ошибка ввода", MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
                 return;
             }
-            decimal price, sail, total;
+            decimal price, sail, total, kolVo;
             price = Decimal.Parse(textBox1.Text);
             sail = Decimal.Parse(textBox2.Text);
+            kolVo = Decimal.Parse(textBox3.Text);
+
             if (textBox2.Visible == false)
             {
                 textBox4.Text = (price).ToString();
@@ -212,16 +339,18 @@ namespace BeautySalon
             else
             {
                 total = Convert.ToInt32((price * sail) / 100);
-                textBox4.Text = (price - total).ToString();
+                textBox4.Text = ((price - total) * kolVo).ToString();
             }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+
             if (string.IsNullOrWhiteSpace(comboBox1.Text)
-    || string.IsNullOrWhiteSpace(comboBox2.Text)
-    || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
-    || string.IsNullOrWhiteSpace(textBox4.Text))
+                || string.IsNullOrWhiteSpace(comboBox2.Text)
+                || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
+                || string.IsNullOrWhiteSpace(textBox3.Text)
+                || string.IsNullOrWhiteSpace(textBox4.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
                                 "Ошибка ввода", MessageBoxButtons.OK,
@@ -232,13 +361,15 @@ namespace BeautySalon
             if (comboBox1.Text != ""
               || dateTimePicker1.Text != ""
               || comboBox2.Text != ""
+              || textBox3.Text != ""
               || textBox4.Text != "")
             {
-                SqlCommand com = new SqlCommand("INSERT INTO ServicePayment ([ID Клиента],Услуги, Дата, Итог) VALUES (@ClientID, @Service, @Date, @Itog)", sqlConn);
+                SqlCommand com = new SqlCommand("INSERT INTO ProductPayment ([ID Клиента],Товар, Дата, [Количество (шт)], Итог) VALUES (@ClientID, @Prod, @Date,@KolVo, @Itog)", sqlConn);
                 sqlConn.Open();
                 com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
-                com.Parameters.AddWithValue("@Service", comboBox2.Text);
+                com.Parameters.AddWithValue("@Prod", comboBox2.Text);
                 com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
+                com.Parameters.AddWithValue("@KolVo", textBox3.Text);
                 com.Parameters.AddWithValue("@Itog", textBox4.Text);
                 com.ExecuteNonQuery();
                 sqlConn.Close();
@@ -257,9 +388,10 @@ namespace BeautySalon
         private void button2_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(comboBox1.Text)
-                || string.IsNullOrWhiteSpace(comboBox2.Text)
-                || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
-                || string.IsNullOrWhiteSpace(textBox4.Text))
+                 || string.IsNullOrWhiteSpace(comboBox2.Text)
+                 || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
+                 || string.IsNullOrWhiteSpace(textBox3.Text)
+                 || string.IsNullOrWhiteSpace(textBox4.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
                                 "Ошибка ввода", MessageBoxButtons.OK,
@@ -274,14 +406,16 @@ namespace BeautySalon
                 if (comboBox1.Text != ""
                     || dateTimePicker1.Text != ""
                     || comboBox2.Text != ""
+                    || textBox3.Text != ""
                     || textBox4.Text != "")
                 {
                     sqlConn.Open();
-                    SqlCommand com = new SqlCommand("UPDATE ServicePayment set [ID Клиента] = @ClientID, Услуги = @Service, Дата = @Date, Итог = @Itog where Id = @Id", sqlConn);
+                    SqlCommand com = new SqlCommand("UPDATE ProductPayment  [ID Клиента] = @ClientID, Товар = @Prod, Дата = @Date, Количество = @KolVo Итог = @Itog where Id = @Id", sqlConn);
                     com.Parameters.AddWithValue("@Id", SqlDbType.Int).Value = Id;
                     com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
-                    com.Parameters.AddWithValue("@Service", comboBox2.Text);
+                    com.Parameters.AddWithValue("@Prod", comboBox2.Text);
                     com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
+                    com.Parameters.AddWithValue("@KolVo", textBox3.Text);
                     com.Parameters.AddWithValue("@Itog", textBox4.Text);
                     com.ExecuteNonQuery();
                     sqlConn.Close();
@@ -301,9 +435,10 @@ namespace BeautySalon
         private void button3_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(comboBox1.Text)
-               || string.IsNullOrWhiteSpace(comboBox2.Text)
-               || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
-               || string.IsNullOrWhiteSpace(textBox4.Text))
+                || string.IsNullOrWhiteSpace(comboBox2.Text)
+                || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
+                || string.IsNullOrWhiteSpace(textBox3.Text)
+                || string.IsNullOrWhiteSpace(textBox4.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
                                 "Ошибка ввода", MessageBoxButtons.OK,
@@ -319,7 +454,7 @@ namespace BeautySalon
                 if (Id != 0)
                 {
                     sqlConn.Open();
-                    SqlCommand command = new SqlCommand("DELETE ServicePayment where Id = @Id", sqlConn);
+                    SqlCommand command = new SqlCommand("DELETE ProductPayment where Id = @Id", sqlConn);
                     command.Parameters.AddWithValue("@Id", Id);
                     command.ExecuteNonQuery();
                     sqlConn.Close();
@@ -400,6 +535,46 @@ namespace BeautySalon
         }
 
         private void button5_Click(object sender, EventArgs e)
+        {
+            OpenDocxFile();
+        }
+
+        private void textBox8_TextChanged(object sender, EventArgs e)
+        {
+            dataGridView2.ClearSelection();
+            if (!string.IsNullOrEmpty(textBox8.Text))
+            {
+                foreach (DataGridViewRow row in dataGridView2.Rows)
+                {
+                    foreach (DataGridViewCell cell in row.Cells)
+                    {
+                        if (cell.Value != null && cell.Value.ToString().ToUpper().Contains(textBox8.Text.ToUpper()))
+                        {
+                            row.Selected = true;
+                            dataGridView2.CurrentCell = cell;
+                            break;
+                        }
+                    }
+                    if (dataGridView2.SelectedCells.Count > 0)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridViewRow row = dataGridView2.Rows[e.RowIndex];
+            Id = Convert.ToInt32(row.Cells[0].Value.ToString());
+            comboBox1.Text = row.Cells[1].Value.ToString();
+            comboBox2.Text = row.Cells[2].Value.ToString();
+            dateTimePicker1.Value = Convert.ToDateTime(row.Cells[3].Value.ToString());
+            textBox3.Text = row.Cells[4].Value.ToString();
+            textBox4.Text = row.Cells[5].Value.ToString();
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
 
         }

@@ -16,7 +16,7 @@ namespace BeautySalon
 {
     public partial class Records : Form
     {
-        SqlConnection sqlConn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Aarone\\Desktop\\BeautySalon\\BeautySalonDb.mdf;Integrated Security=True;Connect Timeout=30");
+        SqlConnection sqlConn = new SqlConnection("");
         int Id = 0;
         private Size _initialFormSize;
 
@@ -277,6 +277,16 @@ namespace BeautySalon
             populateClient();
             populateService();
             populateTime();
+            if (MyConnection.type == "M")
+            {
+                сотрудникиToolStripMenuItem.Visible = false;
+            }
+
+            if (MyConnection.type == "K")
+            {
+                сотрудникиToolStripMenuItem.Visible = false;
+                записьНаУслугуToolStripMenuItem.Visible = false;
+            }
         }
         private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
         {

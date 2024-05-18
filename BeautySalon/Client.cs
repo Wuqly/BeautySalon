@@ -19,7 +19,7 @@ namespace BeautySalon
     public partial class Client : Form
     {
 
-        SqlConnection sqlConn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Aarone\\Desktop\\BeautySalon\\BeautySalonDb.mdf;Integrated Security=True;Connect Timeout=30");
+        SqlConnection sqlConn = new SqlConnection("");
         int Id = 0;
         private Size _initialFormSize;
 
@@ -67,6 +67,16 @@ namespace BeautySalon
 
         private void Client_Load(object sender, EventArgs e)
         {
+            if (MyConnection.type == "M")
+            {
+                toolStripMenuItem7.Visible = false;
+            }
+
+            if (MyConnection.type == "K")
+            {
+                toolStripMenuItem7.Visible = false;
+                toolStripMenuItem4.Visible = false;
+            }
             populate();
         }
 

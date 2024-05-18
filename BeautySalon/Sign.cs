@@ -17,7 +17,7 @@ namespace BeautySalon
 {
     public partial class Sign : Form
     {
-        SqlConnection sqlConn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Aarone\\Desktop\\BeautySalon\\BeautySalonDb.mdf;Integrated Security=True;Connect Timeout=30");
+        SqlConnection sqlConn = new SqlConnection(" t=True;TrustServerCertificate=True");
         int Id = 0;
         private Size _initialFormSize;
         [DllImport("gdi32.dll")]
