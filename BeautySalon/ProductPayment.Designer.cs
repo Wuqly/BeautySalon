@@ -68,6 +68,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.textBox8 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
@@ -152,7 +154,7 @@
             this.toolStripMenuItem2,
             this.toolStripMenuItem3,
             this.toolStripMenuItem9});
-            this.menuStrip2.Location = new System.Drawing.Point(278, 45);
+            this.menuStrip2.Location = new System.Drawing.Point(278, 47);
             this.menuStrip2.Name = "menuStrip2";
             this.menuStrip2.Size = new System.Drawing.Size(353, 33);
             this.menuStrip2.TabIndex = 53;
@@ -231,14 +233,14 @@
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(180, 30);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(146, 30);
             this.toolStripMenuItem10.Text = "Услуги";
             this.toolStripMenuItem10.Click += new System.EventHandler(this.toolStripMenuItem10_Click);
             // 
             // toolStripMenuItem11
             // 
             this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.Size = new System.Drawing.Size(180, 30);
+            this.toolStripMenuItem11.Size = new System.Drawing.Size(146, 30);
             this.toolStripMenuItem11.Text = "Товара";
             this.toolStripMenuItem11.Click += new System.EventHandler(this.toolStripMenuItem11_Click);
             // 
@@ -248,9 +250,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.dataGridView2);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.groupBox2.Location = new System.Drawing.Point(0, 74);
+            this.groupBox2.Location = new System.Drawing.Point(0, 83);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(950, 246);
+            this.groupBox2.Size = new System.Drawing.Size(950, 231);
             this.groupBox2.TabIndex = 54;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Оплаченные товары";
@@ -272,13 +274,15 @@
             this.dataGridView2.ReadOnly = true;
             this.dataGridView2.RowHeadersWidth = 51;
             this.dataGridView2.RowTemplate.Height = 24;
-            this.dataGridView2.Size = new System.Drawing.Size(944, 225);
+            this.dataGridView2.Size = new System.Drawing.Size(944, 210);
             this.dataGridView2.TabIndex = 1;
             // 
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.textBox3);
+            this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.button5);
             this.groupBox1.Controls.Add(this.groupBox4);
             this.groupBox1.Controls.Add(this.dateTimePicker1);
@@ -536,6 +540,24 @@
             this.textBox8.Size = new System.Drawing.Size(330, 22);
             this.textBox8.TabIndex = 41;
             // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(150, 121);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(110, 22);
+            this.textBox3.TabIndex = 60;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Comic Sans MS", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(23, 124);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(122, 19);
+            this.label6.TabIndex = 59;
+            this.label6.Text = "Количество (шт)";
+            // 
             // ProductPayment
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -613,5 +635,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox textBox8;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Label label6;
     }
 }
