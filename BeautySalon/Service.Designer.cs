@@ -227,6 +227,8 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(181, 22);
             this.textBox2.TabIndex = 26;
+            this.textBox2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox2_KeyDown);
+            this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
             // 
             // label1
             // 
@@ -318,7 +320,7 @@
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.groupBox3.Location = new System.Drawing.Point(584, 324);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(343, 48);
+            this.groupBox3.Size = new System.Drawing.Size(343, 51);
             this.groupBox3.TabIndex = 44;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Поиск";
@@ -326,9 +328,9 @@
             // textBox8
             // 
             this.textBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox8.Location = new System.Drawing.Point(22, 19);
+            this.textBox8.Location = new System.Drawing.Point(6, 20);
             this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(314, 22);
+            this.textBox8.Size = new System.Drawing.Size(330, 22);
             this.textBox8.TabIndex = 41;
             this.textBox8.TextChanged += new System.EventHandler(this.textBox8_TextChanged);
             // 

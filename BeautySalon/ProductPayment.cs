@@ -22,7 +22,6 @@ namespace BeautySalon
     public partial class ProductPayment : Form
     {
 
-        SqlConnection sqlConn = new SqlConnection("");
         SqlDataReader reader;
         SqlCommand cmd;
         int Id = 0;
@@ -178,49 +177,55 @@ namespace BeautySalon
 
         private void populate()
         {
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
             string Myquary = "select * from ProductPayment";
-            SqlCommand cmd = new SqlCommand(Myquary, sqlConn);
+            SqlCommand cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd;
             System.Data.DataTable ds = new System.Data.DataTable();
             da.Fill(ds);
             dataGridView2.DataSource = ds;
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void populateClient()
         {
-
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
             string Myquary = "select * from Clients";
-            cmd = new SqlCommand(Myquary, sqlConn);
-            sqlConn.Open();
+            cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
+            ProjectConnection.sqlConn.Open();
             reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 comboBox1.Items.Add(reader["Id"]);
             }
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void populateProduct()
         {
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
             string Myquary = "select * from Product";
-            cmd = new SqlCommand(Myquary, sqlConn);
-            sqlConn.Open();
+            cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
+            ProjectConnection.sqlConn.Open();
             reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 comboBox2.Items.Add(reader["Наименование"]);
             }
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
             comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            cmd = new SqlCommand("SELECT * FROM Clients WHERE Id = @Id", sqlConn);
+            cmd = new SqlCommand("SELECT * FROM Clients WHERE Id = @Id", ProjectConnection.sqlConn);
             cmd.Parameters.AddWithValue("@Id", comboBox1.Text);
             reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -237,14 +242,16 @@ namespace BeautySalon
             {
                 textBox2.Visible = true;
             }
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
             comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            cmd = new SqlCommand("SELECT * FROM Product WHERE Наименование = @Name", sqlConn);
+            cmd = new SqlCommand("SELECT * FROM Product WHERE Наименование = @Name", ProjectConnection.sqlConn);
             cmd.Parameters.AddWithValue("@Name", comboBox2.Text);
             reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -252,7 +259,7 @@ namespace BeautySalon
                 string price = reader["Цена (₽)"].ToString();
                 textBox1.Text = price;
             }
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void ProductPayment_Load(object sender, EventArgs e)
@@ -275,7 +282,6 @@ namespace BeautySalon
 
         private void button4_Click(object sender, EventArgs e)
         {
-
             string textBoxValue = textBox3.Text; // Замените yourTextBox на реальный контрол TextBox в вашем приложении
             int textBoxNumber;
             bool isParsed = int.TryParse(textBoxValue, out textBoxNumber);
@@ -290,16 +296,18 @@ namespace BeautySalon
             // Запрос SQL для сравнения значений
             string sqlQuery = "SELECT * FROM Product WHERE [Количество (шт)] < @textBoxNumber";
 
-            using (SqlConnection sqlConn = new SqlConnection(""))
+            using (SqlConnection conn = new SqlConnection("Data Source=WUQLY\\SQLEXPRESS;Initial Catalog=BeautySalonDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True"))
             {
                
-                SqlCommand command = new SqlCommand(sqlQuery, sqlConn);
+                SqlCommand command = new SqlCommand(sqlQuery, conn);
                 // Добавляем параметр для безопасного сравнения значений
                 command.Parameters.AddWithValue("@textBoxNumber", textBoxNumber);
 
                 try
                 {
-                    sqlConn.Open();
+                    ProjectConnection NewConnection = new ProjectConnection();
+                    NewConnection.Connection_Today();
+                    conn.Open();
                     SqlDataReader reader = command.ExecuteReader();
                     if (reader.HasRows)
                     {
@@ -364,15 +372,17 @@ namespace BeautySalon
               || textBox3.Text != ""
               || textBox4.Text != "")
             {
-                SqlCommand com = new SqlCommand("INSERT INTO ProductPayment ([ID Клиента],Товар, Дата, [Количество (шт)], Итог) VALUES (@ClientID, @Prod, @Date,@KolVo, @Itog)", sqlConn);
-                sqlConn.Open();
+                ProjectConnection NewConnection = new ProjectConnection();
+                NewConnection.Connection_Today();
+                SqlCommand com = new SqlCommand("INSERT INTO ProductPayment ([ID Клиента],Товар, Дата, [Количество (шт)], Итог) VALUES (@ClientID, @Prod, @Date,@KolVo, @Itog)", ProjectConnection.sqlConn);
+                ProjectConnection.sqlConn.Open();
                 com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
                 com.Parameters.AddWithValue("@Prod", comboBox2.Text);
                 com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
                 com.Parameters.AddWithValue("@KolVo", textBox3.Text);
                 com.Parameters.AddWithValue("@Itog", textBox4.Text);
                 com.ExecuteNonQuery();
-                sqlConn.Close();
+                ProjectConnection.sqlConn.Close();
                 populate();
                 ClearControls();
                 MessageBox.Show("Данные успешно добавлены", "Добавление",
@@ -409,8 +419,10 @@ namespace BeautySalon
                     || textBox3.Text != ""
                     || textBox4.Text != "")
                 {
-                    sqlConn.Open();
-                    SqlCommand com = new SqlCommand("UPDATE ProductPayment  [ID Клиента] = @ClientID, Товар = @Prod, Дата = @Date, Количество = @KolVo Итог = @Itog where Id = @Id", sqlConn);
+                    ProjectConnection NewConnection = new ProjectConnection();
+                    NewConnection.Connection_Today();
+                    ProjectConnection.sqlConn.Open();
+                    SqlCommand com = new SqlCommand("UPDATE ProductPayment set [ID Клиента] = @ClientID, Товар = @Prod, Дата = @Date, [Количество (шт)] = @KolVo, Итог = @Itog where Id = @Id", ProjectConnection.sqlConn);
                     com.Parameters.AddWithValue("@Id", SqlDbType.Int).Value = Id;
                     com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
                     com.Parameters.AddWithValue("@Prod", comboBox2.Text);
@@ -418,7 +430,7 @@ namespace BeautySalon
                     com.Parameters.AddWithValue("@KolVo", textBox3.Text);
                     com.Parameters.AddWithValue("@Itog", textBox4.Text);
                     com.ExecuteNonQuery();
-                    sqlConn.Close();
+                    ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
                     MessageBox.Show("Вы успешно отредактировали запись",
@@ -453,11 +465,13 @@ namespace BeautySalon
             {
                 if (Id != 0)
                 {
-                    sqlConn.Open();
-                    SqlCommand command = new SqlCommand("DELETE ProductPayment where Id = @Id", sqlConn);
+                    ProjectConnection NewConnection = new ProjectConnection();
+                    NewConnection.Connection_Today();
+                    ProjectConnection.sqlConn.Open();
+                    SqlCommand command = new SqlCommand("DELETE ProductPayment where Id = @Id", ProjectConnection.sqlConn);
                     command.Parameters.AddWithValue("@Id", Id);
                     command.ExecuteNonQuery();
-                    sqlConn.Close();
+                    ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
                     MessageBox.Show("Вы успешно удалили запись",
@@ -565,18 +579,59 @@ namespace BeautySalon
 
         private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            DataGridViewRow row = dataGridView2.Rows[e.RowIndex];
-            Id = Convert.ToInt32(row.Cells[0].Value.ToString());
-            comboBox1.Text = row.Cells[1].Value.ToString();
-            comboBox2.Text = row.Cells[2].Value.ToString();
-            dateTimePicker1.Value = Convert.ToDateTime(row.Cells[3].Value.ToString());
-            textBox3.Text = row.Cells[4].Value.ToString();
-            textBox4.Text = row.Cells[5].Value.ToString();
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dataGridView2.Rows[e.RowIndex];
+                Id = Convert.ToInt32(row.Cells[0].Value.ToString());
+                comboBox1.Text = row.Cells[1].Value.ToString();
+                comboBox2.Text = row.Cells[2].Value.ToString();
+                dateTimePicker1.Value = Convert.ToDateTime(row.Cells[3].Value.ToString());
+                textBox3.Text = row.Cells[4].Value.ToString();
+                textBox4.Text = row.Cells[5].Value.ToString();
+            }
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!Char.IsDigit(e.KeyChar))
+            {
+                // Запрет на ввод более одной десятичной точки.
+                if (e.KeyChar != '.' || textBox3.Text.IndexOf(".") != 0)
+                {
+                    e.Handled = true;
+                }
+            }
+
+        }
+
+        private void textBox3_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Back)
+            {
+                var selectionStart = textBox3.SelectionStart;
+                if (textBox3.SelectionLength > 0)
+                {
+                    textBox3.Text = textBox3.Text.Substring(0, selectionStart) + textBox3.Text.Substring(selectionStart + textBox3.SelectionLength);
+                    textBox3.SelectionStart = selectionStart;
+                }
+                else if (selectionStart > 0)
+                {
+                    textBox3.Text = textBox3.Text.Substring(0, selectionStart - 1) + textBox3.Text.Substring(selectionStart);
+                    textBox3.SelectionStart = selectionStart - 1;
+                }
+
+                e.Handled = true;
+            }
         }
     }
 }

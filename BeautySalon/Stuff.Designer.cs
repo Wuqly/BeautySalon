@@ -413,13 +413,14 @@
             this.groupBox1.TabIndex = 34;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Создать запись";
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // pictureBox2
             // 
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(342, 132);
+            this.pictureBox2.Location = new System.Drawing.Point(337, 133);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(21, 23);
+            this.pictureBox2.Size = new System.Drawing.Size(26, 26);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 62;
             this.pictureBox2.TabStop = false;
@@ -428,9 +429,9 @@
             // pictureBox3
             // 
             this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
-            this.pictureBox3.Location = new System.Drawing.Point(343, 132);
+            this.pictureBox3.Location = new System.Drawing.Point(337, 133);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(20, 23);
+            this.pictureBox3.Size = new System.Drawing.Size(26, 26);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox3.TabIndex = 61;
             this.pictureBox3.TabStop = false;
@@ -519,7 +520,7 @@
             // 
             this.textBox5.Location = new System.Drawing.Point(190, 133);
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(157, 22);
+            this.textBox5.Size = new System.Drawing.Size(147, 22);
             this.textBox5.TabIndex = 53;
             // 
             // groupBox2

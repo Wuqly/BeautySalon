@@ -17,7 +17,6 @@ namespace BeautySalon
 {
     public partial class Sign : Form
     {
-        SqlConnection sqlConn = new SqlConnection(" t=True;TrustServerCertificate=True");
         int Id = 0;
         private Size _initialFormSize;
         [DllImport("gdi32.dll")]
@@ -121,11 +120,13 @@ namespace BeautySalon
             }
             var login = textBox1.Text;
             var password = textBox2.Text;
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
             string query = $"SELECT * FROM Stuff where Логин = '{login}' and Пароль = '{password}'";
-            SqlDataAdapter ad = new SqlDataAdapter(query, sqlConn);
+            SqlDataAdapter ad = new SqlDataAdapter(query, ProjectConnection.sqlConn);
             DataTable dataTable = new DataTable();
-            SqlCommand cmd = new SqlCommand($"select * from Stuff where Логин = '{login}' and Пароль = '{password}'", sqlConn);
+            SqlCommand cmd = new SqlCommand($"select * from Stuff where Логин = '{login}' and Пароль = '{password}'", ProjectConnection.sqlConn);
             ad.Fill(dataTable);
             SqlDataReader reader = cmd.ExecuteReader();
             if (reader.HasRows)
@@ -152,7 +153,7 @@ namespace BeautySalon
                 MessageBox.Show("Пользователь с такими данными не зарегистрирован или неверный логин или пароль",
                 "Вход в программу не совершен", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace BeautySalon
 {
     public partial class ServicePayment : Form
     {
-        SqlConnection sqlConn = new SqlConnection("");
+
         SqlDataReader reader;
         SqlCommand cmd;
         int Id = 0;
@@ -90,42 +90,46 @@ namespace BeautySalon
 
         private void populate()
         {
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
             string Myquary = "select * from ServicePayment";
-            SqlCommand cmd = new SqlCommand(Myquary, sqlConn);
+            SqlCommand cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd;
             System.Data.DataTable ds = new System.Data.DataTable();
             da.Fill(ds);
             dataGridView2.DataSource = ds;
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void populateClient()
         {
-            
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
             string Myquary = "select * from Clients";
-            cmd = new SqlCommand(Myquary, sqlConn);
-            sqlConn.Open();
+            cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
+            ProjectConnection.sqlConn.Open();
             reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 comboBox1.Items.Add(reader["Id"]);
             }
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void populateService()
         {
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
             string Myquary = "select * from Service";
-            cmd = new SqlCommand(Myquary, sqlConn);
-            sqlConn.Open();
+            cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
+            ProjectConnection.sqlConn.Open();
             reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 comboBox2.Items.Add(reader["Наименование"]);
             }
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
         private void ReplaceWordStub(string stubToReplace, string text, Microsoft.Office.Interop.Word.Document wordDocument)
         {
@@ -200,9 +204,11 @@ namespace BeautySalon
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
             comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            cmd = new SqlCommand("SELECT * FROM Service WHERE Наименование = @Name", sqlConn);
+            cmd = new SqlCommand("SELECT * FROM Service WHERE Наименование = @Name", ProjectConnection.sqlConn);
             cmd.Parameters.AddWithValue("@Name", comboBox2.Text);
             reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -210,14 +216,16 @@ namespace BeautySalon
                 string price = reader["Цена (₽)"].ToString();
                 textBox1.Text = price;
             }
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
             comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            cmd = new SqlCommand("SELECT * FROM Clients WHERE Id = @Id", sqlConn);
+            cmd = new SqlCommand("SELECT * FROM Clients WHERE Id = @Id", ProjectConnection.sqlConn);
             cmd.Parameters.AddWithValue("@Id", comboBox1.Text);
             reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -234,7 +242,7 @@ namespace BeautySalon
             {
                 textBox2.Visible = true;
             }
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void ServicePayment_FormClosed(object sender, FormClosedEventArgs e)
@@ -315,14 +323,16 @@ namespace BeautySalon
               || comboBox2.Text != ""
               || textBox4.Text != "")
             {
-                SqlCommand com = new SqlCommand("INSERT INTO ServicePayment ([ID Клиента],Услуги, Дата, Итог) VALUES (@ClientID, @Service, @Date, @Itog)", sqlConn);
-                sqlConn.Open();
+                ProjectConnection NewConnection = new ProjectConnection();
+                NewConnection.Connection_Today();
+                SqlCommand com = new SqlCommand("INSERT INTO ServicePayment ([ID Клиента],Услуги, Дата, Итог) VALUES (@ClientID, @Service, @Date, @Itog)", ProjectConnection.sqlConn);
+                ProjectConnection.sqlConn.Open();
                 com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
                 com.Parameters.AddWithValue("@Service", comboBox2.Text);
                 com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
                 com.Parameters.AddWithValue("@Itog", textBox4.Text);
                 com.ExecuteNonQuery();
-                sqlConn.Close();
+                ProjectConnection.sqlConn.Close();
                 populate();
                 ClearControls();
                 MessageBox.Show("Данные успешно добавлены", "Добавление",
@@ -357,15 +367,17 @@ namespace BeautySalon
                     || comboBox2.Text != ""
                     || textBox4.Text != "")
                 {
-                    sqlConn.Open();
-                    SqlCommand com = new SqlCommand("UPDATE ServicePayment set [ID Клиента] = @ClientID, Услуги = @Service, Дата = @Date, Итог = @Itog where Id = @Id", sqlConn);
+                    ProjectConnection NewConnection = new ProjectConnection();
+                    NewConnection.Connection_Today();
+                    ProjectConnection.sqlConn.Open();
+                    SqlCommand com = new SqlCommand("UPDATE ServicePayment set [ID Клиента] = @ClientID, Услуги = @Service, Дата = @Date, Итог = @Itog where Id = @Id", ProjectConnection.sqlConn);
                     com.Parameters.AddWithValue("@Id", SqlDbType.Int).Value = Id;
                     com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
                     com.Parameters.AddWithValue("@Service", comboBox2.Text);
                     com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
                     com.Parameters.AddWithValue("@Itog", textBox4.Text);
                     com.ExecuteNonQuery();
-                    sqlConn.Close();
+                    ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
                     MessageBox.Show("Вы успешно отредактировали запись",
@@ -399,11 +411,13 @@ namespace BeautySalon
             {
                 if (Id != 0)
                 {
-                    sqlConn.Open();
-                    SqlCommand command = new SqlCommand("DELETE ServicePayment where Id = @Id", sqlConn);
+                    ProjectConnection NewConnection = new ProjectConnection();
+                    NewConnection.Connection_Today();
+                    ProjectConnection.sqlConn.Open();
+                    SqlCommand command = new SqlCommand("DELETE ServicePayment where Id = @Id", ProjectConnection.sqlConn);
                     command.Parameters.AddWithValue("@Id", Id);
                     command.ExecuteNonQuery();
-                    sqlConn.Close();
+                    ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
                     MessageBox.Show("Вы успешно удалили запись",

@@ -18,7 +18,6 @@ namespace BeautySalon
 {
     public partial class Service : Form
     {
-        SqlConnection sqlConn = new SqlConnection("");
         int Id = 0;
         private Size _initialFormSize;
 
@@ -64,9 +63,11 @@ namespace BeautySalon
 
         public Boolean chekService()
         {
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
             DataTable dataTable = new DataTable();
             SqlDataAdapter ad = new SqlDataAdapter();
-            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Service where Логин = '" + textBox1.Text + "'", sqlConn);
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Service where Наименование = '" + textBox1.Text + "'", ProjectConnection.sqlConn);
             ad.SelectCommand = sqlCommand;
             ad.Fill(dataTable);
             if (dataTable.Rows.Count > 0)
@@ -91,23 +92,21 @@ namespace BeautySalon
 
         private void populate()
         {
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
             string Myquary = "select * from Service";
-            SqlCommand cmd = new SqlCommand(Myquary, sqlConn);
+            SqlCommand cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd;
             DataTable ds = new DataTable();
             da.Fill(ds);
             dataGridView2.DataSource = ds;
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (chekService())
-            {
-                return;
-            }
             if (string.IsNullOrWhiteSpace(textBox1.Text) || string.IsNullOrWhiteSpace(textBox2.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
@@ -115,15 +114,23 @@ namespace BeautySalon
                                 MessageBoxIcon.Error);
                 return;
             }
+
+            if (chekService())
+            {
+                return;
+            }
+
             if (textBox1.Text != ""
                 || textBox2.Text != "")
             {
-                SqlCommand com = new SqlCommand("INSERT INTO Service (Наименование, [Цена (₽)]) VALUES (@Name, @Price)", sqlConn);
-                sqlConn.Open();
+                ProjectConnection NewConnection = new ProjectConnection();
+                NewConnection.Connection_Today();
+                SqlCommand com = new SqlCommand("INSERT INTO Service (Наименование, [Цена (₽)]) VALUES (@Name, @Price)", ProjectConnection.sqlConn);
+                ProjectConnection.sqlConn.Open();
                 com.Parameters.AddWithValue("@Name", textBox1.Text);
                 com.Parameters.AddWithValue("@Price", textBox2.Text);
                 com.ExecuteNonQuery();
-                sqlConn.Close();
+                ProjectConnection.sqlConn.Close();
                 populate();
                 ClearControls();
                 MessageBox.Show("Данные успешно добавлены", "Добавление",
@@ -153,12 +160,14 @@ namespace BeautySalon
                 if (textBox1.Text != ""
                     || textBox2.Text != "")
                 {
-                    SqlCommand com = new SqlCommand("UPDATE Service set [Цена (₽)] = @Price Where Наименование = @Name", sqlConn);
-                    sqlConn.Open();
+                    ProjectConnection NewConnection = new ProjectConnection();
+                    NewConnection.Connection_Today();
+                    SqlCommand com = new SqlCommand("UPDATE Service set [Цена (₽)] = @Price Where Наименование = @Name", ProjectConnection.sqlConn);
+                    ProjectConnection.sqlConn.Open();
                     com.Parameters.AddWithValue("@Name", textBox1.Text);
                     com.Parameters.AddWithValue("@Price", textBox2.Text);
                     com.ExecuteNonQuery();
-                    sqlConn.Close();
+                    ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
                     MessageBox.Show("Данные успешно добавлены", "Добавление",
@@ -193,11 +202,13 @@ namespace BeautySalon
             {
                 if (textBox1.Text != "")
                 {
-                    sqlConn.Open();
-                    SqlCommand command = new SqlCommand("DELETE Service where Наименование = @Name", sqlConn);
+                    ProjectConnection NewConnection = new ProjectConnection();
+                    NewConnection.Connection_Today();
+                    ProjectConnection.sqlConn.Open();
+                    SqlCommand command = new SqlCommand("DELETE Service where Наименование = @Name", ProjectConnection.sqlConn);
                     command.Parameters.AddWithValue("@Name", textBox1.Text);
                     command.ExecuteNonQuery();
-                    sqlConn.Close();
+                    ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
                     MessageBox.Show("Вы успешно удалили запись",
@@ -347,6 +358,38 @@ namespace BeautySalon
                 this.Size = _initialFormSize;
                 this.CenterToScreen();
                 this.WindowState = FormWindowState.Normal;
+            }
+        }
+
+        private void textBox2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Back)
+            {
+                var selectionStart = textBox2.SelectionStart;
+                if (textBox2.SelectionLength > 0)
+                {
+                    textBox2.Text = textBox2.Text.Substring(0, selectionStart) + textBox2.Text.Substring(selectionStart + textBox2.SelectionLength);
+                    textBox2.SelectionStart = selectionStart;
+                }
+                else if (selectionStart > 0)
+                {
+                    textBox2.Text = textBox2.Text.Substring(0, selectionStart - 1) + textBox2.Text.Substring(selectionStart);
+                    textBox2.SelectionStart = selectionStart - 1;
+                }
+
+                e.Handled = true;
+            }
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!Char.IsDigit(e.KeyChar))
+            {
+                // Запрет на ввод более одной десятичной точки.
+                if (e.KeyChar != '.' || textBox2.Text.IndexOf(".") != 0)
+                {
+                    e.Handled = true;
+                }
             }
         }
     }

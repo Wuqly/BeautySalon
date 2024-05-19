@@ -18,7 +18,6 @@ namespace BeautySalon
 {
     public partial class Stuff : Form
     {
-        SqlConnection sqlConn = new SqlConnection("");
         int Id = 0;
 
         private Size _initialFormSize;
@@ -73,6 +72,71 @@ namespace BeautySalon
             button4.Font = myFont1;
         }
 
+        public Boolean chekUser()
+        {
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            DataTable dataTable = new DataTable();
+            SqlDataAdapter ad = new SqlDataAdapter();
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Stuff where Логин = '" + textBox4.Text + "'", ProjectConnection.sqlConn);
+            ad.SelectCommand = sqlCommand;
+            ad.Fill(dataTable);
+            if (dataTable.Rows.Count > 0)
+            {
+                MessageBox.Show("Такой логин уже существует",
+                "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+        public Boolean chekPhone()
+        {
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            DataTable dataTable = new DataTable();
+            SqlDataAdapter ad = new SqlDataAdapter();
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Stuff where [Номер телефона] = '" + maskedTextBox1.Text + "'", ProjectConnection.sqlConn);
+            ad.SelectCommand = sqlCommand;
+            ad.Fill(dataTable);
+            if (dataTable.Rows.Count > 0)
+            {
+                MessageBox.Show("Такой номер уже существует",
+                "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        public Boolean chekPassport()
+        {
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            DataTable dataTable = new DataTable();
+            SqlDataAdapter ad = new SqlDataAdapter();
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Stuff where Паспорт = '" + maskedTextBox2.Text + "'", ProjectConnection.sqlConn);
+            ad.SelectCommand = sqlCommand;
+            ad.Fill(dataTable);
+            if (dataTable.Rows.Count > 0)
+            {
+                MessageBox.Show("Такой паспорт уже существует",
+                "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
         private void ClearControls()
         {
             Id = 0;
@@ -89,23 +153,27 @@ namespace BeautySalon
 
         private void populate()
         {
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
             string Myquary = "select * from Stuff";
-            SqlCommand cmd = new SqlCommand(Myquary, sqlConn);
+            SqlCommand cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd;
             DataTable ds = new DataTable();
             da.Fill(ds);
             dataGridView2.DataSource = ds;
             dataGridView2.Columns["Фото"].Visible = false;
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void populatePost()
         {
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
             string Myquary = "select * from Posts";
-            SqlCommand cmd = new SqlCommand(Myquary, sqlConn);
+            SqlCommand cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd;
             DataTable ds = new DataTable();
@@ -113,7 +181,7 @@ namespace BeautySalon
             comboBox1.DisplayMember = "Название";
             comboBox1.DataSource = ds;
             comboBox1.SelectedIndex = -1;
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
         public byte[] imageToByteArray(Image imageIn)//конвертировать картинку в массив байт
         {
@@ -148,6 +216,7 @@ namespace BeautySalon
 
         private void button1_Click(object sender, EventArgs e)
         {
+
             if (string.IsNullOrWhiteSpace(textBox1.Text)
                 || string.IsNullOrWhiteSpace(textBox2.Text)
                 || string.IsNullOrWhiteSpace(textBox3.Text)
@@ -163,7 +232,18 @@ namespace BeautySalon
                                 MessageBoxIcon.Error);
                 return;
             }
-
+            if (chekUser())
+            {
+                return;
+            }
+            if (chekPhone())
+            {
+                return;
+            }
+            if (chekPassport())
+            {
+                return;
+            }
 
             if (textBox1.Text != ""
               || textBox2.Text != ""
@@ -175,9 +255,11 @@ namespace BeautySalon
               || maskedTextBox2.Text != ""
               || pictureBox1.Image != null)
             {
+                ProjectConnection NewConnection = new ProjectConnection();
+                NewConnection.Connection_Today();
                 SqlCommand com = new SqlCommand("INSERT INTO Stuff (Фамилия, Имя, Отчество, Логин, Пароль, [Номер телефона], Должность, Паспорт, Фото)" +
-                    " VALUES (@fName, @sName, @tName, @Login, @Pass, @Phone, @Post, @Passport, @Foto)", sqlConn);
-                sqlConn.Open();
+                    " VALUES (@fName, @sName, @tName, @Login, @Pass, @Phone, @Post, @Passport, @Foto)", ProjectConnection.sqlConn);
+                ProjectConnection.sqlConn.Open();
                 com.Parameters.AddWithValue("@fName", textBox1.Text);
                 com.Parameters.AddWithValue("@sName", textBox2.Text);
                 com.Parameters.AddWithValue("@tName", textBox3.Text);
@@ -188,7 +270,7 @@ namespace BeautySalon
                 com.Parameters.AddWithValue("@Passport", maskedTextBox2.Text);
                 com.Parameters.Add("@Foto", SqlDbType.Image).Value = imageToByteArray(pictureBox1.Image);
                 com.ExecuteNonQuery();
-                sqlConn.Close();
+                ProjectConnection.sqlConn.Close();
                 populate();
                 ClearControls();
                 MessageBox.Show("Данные успешно добавлены", "Добавление",
@@ -234,8 +316,10 @@ namespace BeautySalon
                     || maskedTextBox2.Text != ""
                     || pictureBox1.Image != null)
                 {
-                    SqlCommand com = new SqlCommand("UPDATE Stuff set Фамилия = @fName, Имя = @sName, Отчество = @tName, Логин = @Login, Пароль = @Pass,[Номер телефона] = @Phone, Должность = @Post, Паспорт = @Passport, Фото = @Photo Where Id = @Id", sqlConn);
-                    sqlConn.Open();
+                    ProjectConnection NewConnection = new ProjectConnection();
+                    NewConnection.Connection_Today();
+                    SqlCommand com = new SqlCommand("UPDATE Stuff set Фамилия = @fName, Имя = @sName, Отчество = @tName, Логин = @Login, Пароль = @Pass,[Номер телефона] = @Phone, Должность = @Post, Паспорт = @Passport, Фото = @Photo Where Id = @Id", ProjectConnection.sqlConn);
+                    ProjectConnection.sqlConn.Open();
                     com.Parameters.AddWithValue("@Id", Id);
                     com.Parameters.AddWithValue("@fName", textBox1.Text);
                     com.Parameters.AddWithValue("@sName", textBox2.Text);
@@ -247,7 +331,7 @@ namespace BeautySalon
                     com.Parameters.AddWithValue("@Passport", maskedTextBox2.Text);
                     com.Parameters.Add("@Photo", SqlDbType.Image).Value = imageToByteArray(pictureBox1.Image);
                     com.ExecuteNonQuery();
-                    sqlConn.Close();
+                    ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
                     MessageBox.Show("Данные успешно редактированы", "Редактирование",
@@ -289,11 +373,13 @@ namespace BeautySalon
             {
                 if (Id != 0)
                 {
-                    sqlConn.Open();
-                    SqlCommand command = new SqlCommand("DELETE Stuff where Id = @Id", sqlConn);
+                    ProjectConnection NewConnection = new ProjectConnection();
+                    NewConnection.Connection_Today();
+                    ProjectConnection.sqlConn.Open();
+                    SqlCommand command = new SqlCommand("DELETE Stuff where Id = @Id", ProjectConnection.sqlConn);
                     command.Parameters.AddWithValue("@Id", Id);
                     command.ExecuteNonQuery();
-                    sqlConn.Close();
+                    ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
                     MessageBox.Show("Вы успешно удалили запись",
@@ -493,6 +579,11 @@ namespace BeautySalon
         private void pictureBox6_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -18,8 +18,6 @@ namespace BeautySalon
 {
     public partial class Client : Form
     {
-
-        SqlConnection sqlConn = new SqlConnection("");
         int Id = 0;
         private Size _initialFormSize;
 
@@ -82,9 +80,11 @@ namespace BeautySalon
 
         private Boolean chekPhone()
         {
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
             DataTable dataTable = new DataTable();
             SqlDataAdapter ad = new SqlDataAdapter();
-            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Clients where [Номер телефона] = '" + maskedTextBox1.Text + "'", sqlConn);
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Clients where [Номер телефона] = '" + maskedTextBox1.Text + "'", ProjectConnection.sqlConn);
             ad.SelectCommand = sqlCommand;
             ad.Fill(dataTable);
             if (dataTable.Rows.Count > 0)
@@ -101,15 +101,17 @@ namespace BeautySalon
 
         private void populate()
         {
-            sqlConn.Open();
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
             string Myquary = "select * from Clients";
-            SqlCommand cmd = new SqlCommand(Myquary, sqlConn);
+            SqlCommand cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd;
             DataTable ds = new DataTable();
             da.Fill(ds);
             dataGridView2.DataSource = ds;
-            sqlConn.Close();
+            ProjectConnection.sqlConn.Close();
         }
 
         private void ClearControls()
@@ -124,9 +126,7 @@ namespace BeautySalon
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(chekPhone()){
-                return;
-            }
+
 
             if (string.IsNullOrWhiteSpace(textBox1.Text)
                 || string.IsNullOrWhiteSpace(textBox2.Text)
@@ -139,22 +139,30 @@ namespace BeautySalon
                                 MessageBoxIcon.Error);
                 return;
             }
+
+            if (chekPhone())
+            {
+                return;
+            }
+
             if (textBox1.Text != ""
               || textBox2.Text != ""
               || textBox3.Text != ""
               || maskedTextBox1.Text != ""
               || textBox4.Text != "")
             {
+                ProjectConnection NewConnection = new ProjectConnection();
+                NewConnection.Connection_Today();
                 SqlCommand com = new SqlCommand("INSERT INTO Clients (Фамилия, Имя, Отчество, [Номер телефона], [Скидка (%)])" +
-                    "VALUES (@fName, @sName, @tName, @Phone, @Sail)", sqlConn);
-                sqlConn.Open();
+                    "VALUES (@fName, @sName, @tName, @Phone, @Sail)", ProjectConnection.sqlConn);
+                ProjectConnection.sqlConn.Open();
                 com.Parameters.AddWithValue("@fName", textBox1.Text);
                 com.Parameters.AddWithValue("@sName", textBox2.Text);
                 com.Parameters.AddWithValue("@tName", textBox3.Text);
                 com.Parameters.AddWithValue("@Phone", maskedTextBox1.Text);
                 com.Parameters.AddWithValue("@Sail", textBox4.Text);
                 com.ExecuteNonQuery();
-                sqlConn.Close();
+                ProjectConnection.sqlConn.Close();
                 populate();
                 ClearControls();
                 MessageBox.Show("Данные успешно добавлены", "Добавление",
@@ -188,8 +196,10 @@ namespace BeautySalon
               || maskedTextBox1.Text != ""
               || textBox4.Text != "")
             {
-                SqlCommand com = new SqlCommand("UPDATE Clients set Фамилия = @fName, Имя = @sName, Отчество = @tName, [Номер телефона] = @Phone, [Скидка (%)] = @Sail Where Id = @Id", sqlConn);
-                sqlConn.Open();
+                ProjectConnection NewConnection = new ProjectConnection();
+                NewConnection.Connection_Today();
+                SqlCommand com = new SqlCommand("UPDATE Clients set Фамилия = @fName, Имя = @sName, Отчество = @tName, [Номер телефона] = @Phone, [Скидка (%)] = @Sail Where Id = @Id", ProjectConnection.sqlConn);
+                ProjectConnection.sqlConn.Open();
                 com.Parameters.AddWithValue("@Id", Id);
                 com.Parameters.AddWithValue("@fName", textBox1.Text);
                 com.Parameters.AddWithValue("@sName", textBox2.Text);
@@ -197,7 +207,7 @@ namespace BeautySalon
                 com.Parameters.AddWithValue("@Phone", maskedTextBox1.Text);
                 com.Parameters.AddWithValue("@Sail", textBox4.Text);
                 com.ExecuteNonQuery();
-                sqlConn.Close();
+                ProjectConnection.sqlConn.Close();
                 populate();
                 ClearControls();
                 MessageBox.Show("Данные успешно добавлены", "Добавление",
@@ -230,11 +240,13 @@ namespace BeautySalon
             {
                 if (Id != 0)
                 {
-                    sqlConn.Open();
-                    SqlCommand command = new SqlCommand("DELETE Clients where Id = @Id", sqlConn);
+                    ProjectConnection NewConnection = new ProjectConnection();
+                    NewConnection.Connection_Today();
+                    ProjectConnection.sqlConn.Open();
+                    SqlCommand command = new SqlCommand("DELETE Clients where Id = @Id", ProjectConnection.sqlConn);
                     command.Parameters.AddWithValue("@Id", Id);
                     command.ExecuteNonQuery();
-                    sqlConn.Close();
+                    ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
                     MessageBox.Show("Вы успешно удалили запись",
@@ -388,6 +400,38 @@ namespace BeautySalon
         private void pictureBox3_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void textBox4_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Back)
+            {
+                var selectionStart = textBox4.SelectionStart;
+                if (textBox4.SelectionLength > 0)
+                {
+                    textBox4.Text = textBox4.Text.Substring(0, selectionStart) + textBox4.Text.Substring(selectionStart + textBox4.SelectionLength);
+                    textBox4    .SelectionStart = selectionStart;
+                }
+                else if (selectionStart > 0)
+                {
+                    textBox4.Text = textBox4.Text.Substring(0, selectionStart - 1) + textBox4.Text.Substring(selectionStart);
+                    textBox4.SelectionStart = selectionStart - 1;
+                }
+
+                e.Handled = true;
+            }
+        }
+
+        private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!Char.IsDigit(e.KeyChar))
+            {
+                // Запрет на ввод более одной десятичной точки.
+                if (e.KeyChar != '.' || textBox4.Text.IndexOf(".") != 0)
+                {
+                    e.Handled = true;
+                }
+            }
         }
     }
 }
