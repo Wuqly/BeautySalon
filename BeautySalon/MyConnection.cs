@@ -18,7 +18,7 @@ namespace BeautySalon
         public static SqlConnection sqlConn = null;
         public void Connection_Today()
         {
-            sqlConn = new SqlConnection("Data Source=WUQLY\\SQLEXPRESS;Initial Catalog=BeautySalonDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True");
+            sqlConn = new SqlConnection("Data Source=WUQLY\\SQLEXPRESS;Initial Catalog=BeautySalonDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True");
         }
     }
 }

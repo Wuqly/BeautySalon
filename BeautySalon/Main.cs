@@ -157,5 +157,12 @@ namespace BeautySalon
         {
             this.WindowState = FormWindowState.Minimized;
         }
+
+        private void типУслугиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TypeOfProd TP = new TypeOfProd();
+            this.Hide();
+            TP.Show();
+        }
     }
 }

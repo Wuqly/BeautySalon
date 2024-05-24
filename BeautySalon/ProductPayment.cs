@@ -16,6 +16,7 @@ using System.Windows.Forms;
 using MetroFramework.Forms;
 using MetroFramework.Fonts;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+using System.Collections;
 
 namespace BeautySalon
 {
@@ -69,7 +70,6 @@ namespace BeautySalon
             label2.Font = myFont1;
             label6.Font = myFont1;
             button1.Font = myFont1;
-            button2.Font = myFont1;
             button3.Font = myFont1;
             button4.Font = myFont1;
             button5.Font = myFont1;
@@ -171,8 +171,11 @@ namespace BeautySalon
             textBox1.Text = "";
             textBox2.Text = "";
             textBox3.Text = "";
+        }
 
-
+        private void ClearControlsKol()
+        {
+            textBox3.Text = "";
         }
 
         private void populate()
@@ -275,125 +278,266 @@ namespace BeautySalon
             if (MyConnection.type == "K")
             {
                 toolStripMenuItem7.Visible = false;
-                toolStripMenuItem4.Visible = false;
             }
         }
 
-
-        private void button4_Click(object sender, EventArgs e)
+        private void IfKol0()
         {
-            string textBoxValue = textBox3.Text; // Замените yourTextBox на реальный контрол TextBox в вашем приложении
-            int textBoxNumber;
-            bool isParsed = int.TryParse(textBoxValue, out textBoxNumber);
-
-            if (!isParsed)
+            using (SqlConnection connection = new SqlConnection("Data Source=WUQLY\\SQLEXPRESS;Initial Catalog=BeautySalonDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True"))
             {
-                MessageBox.Show("Введенное значение не является числом!");
-                return;
-            }
-
-
-            // Запрос SQL для сравнения значений
-            string sqlQuery = "SELECT * FROM Product WHERE [Количество (шт)] < @textBoxNumber";
-
-            using (SqlConnection conn = new SqlConnection("Data Source=WUQLY\\SQLEXPRESS;Initial Catalog=BeautySalonDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True"))
-            {
-               
-                SqlCommand command = new SqlCommand(sqlQuery, conn);
-                // Добавляем параметр для безопасного сравнения значений
-                command.Parameters.AddWithValue("@textBoxNumber", textBoxNumber);
-
                 try
                 {
-                    ProjectConnection NewConnection = new ProjectConnection();
-                    NewConnection.Connection_Today();
-                    conn.Open();
-                    SqlDataReader reader = command.ExecuteReader();
-                    if (reader.HasRows)
+                    // Устанавливаем соединение с базой данных
+                    connection.Open();
+
+                    // SQL-запрос для обновления данных
+                    string query = "Delete From Product Where [Количество (шт)] = 0";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        // Если есть строки, значит, есть записи, где значение из БД меньше значения из текстбокса
-                        MessageBox.Show("Введённое значение больше значения из базы.",
-                                "Ошибка ввода", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                        return;
+                        // Выполняем запрос к БД
+                        int rowsAffected = command.ExecuteNonQuery();
+                        // Проверяем, что запрос на обновление коснулся рядов
                     }
-                    
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Произошла ошибка при подключении к БД: " + ex.Message);
+                    // В случае ошибки выводим сообщение
+                    MessageBox.Show($"Ошибка: {ex.Message}");
+                    return;
                 }
             }
+        }
 
-        
+        private void plusKol()
+        {
+            using (SqlConnection connection = new SqlConnection("Data Source=WUQLY\\SQLEXPRESS;Initial Catalog=BeautySalonDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True"))
+            {
+                try
+                {
+                    // Устанавливаем соединение с базой данных
+                    connection.Open();
 
-            if (textBox1.Text == ""
-                || textBox2.Text == "")
-            {
-                MessageBox.Show("Есть незаполненные поля",
-                "Ошибка ввода", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-                return;
-            }
-            decimal price, sail, total, kolVo;
-            price = Decimal.Parse(textBox1.Text);
-            sail = Decimal.Parse(textBox2.Text);
-            kolVo = Decimal.Parse(textBox3.Text);
+                    // SQL-запрос для обновления данных
+                    string query = "UPDATE Product SET [Количество (шт)] = [Количество (шт)] + @QuantitySubtract WHERE Наименование = @Product";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@QuantitySubtract", textBox3.Text);
+                        command.Parameters.AddWithValue("@Product", comboBox2.SelectedItem.ToString());
+                        // Выполняем запрос к БД
+                        int rowsAffected = command.ExecuteNonQuery();
 
-            if (textBox2.Visible == false)
-            {
-                textBox4.Text = (price).ToString();
+                        // Проверяем, что запрос на обновление коснулся рядов
+                        if (rowsAffected > 0)
+                        {
+
+                            DialogResult dialogResult = MessageBox.Show("Вы хотите удалить запиcь?",
+                                "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                            if (dialogResult == DialogResult.Yes)
+                            {
+                                if (Id != 0)
+                                {
+                                    ProjectConnection NewConnection = new ProjectConnection();
+                                    NewConnection.Connection_Today();
+                                    ProjectConnection.sqlConn.Open();
+                                    SqlCommand com = new SqlCommand("DELETE ProductPayment where Id = @Id", ProjectConnection.sqlConn);
+                                    com.Parameters.AddWithValue("@Id", Id);
+                                    com.ExecuteNonQuery();
+                                    ProjectConnection.sqlConn.Close();
+                                    populate();
+                                    ClearControls();
+                                    MessageBox.Show("Вы успешно удалили запись",
+                                    "Удаление", MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information);
+                                }
+                            }
+                            if (dialogResult == DialogResult.No)
+                            {
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Обновление не затронуло ни одного ряда.");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // В случае ошибки выводим сообщение
+                    MessageBox.Show($"Ошибка: {ex.Message}");
+                }
             }
-            else
+        }
+
+        private void vichetKol()
+        {
+
+            using (SqlConnection connection = new SqlConnection("Data Source=WUQLY\\SQLEXPRESS;Initial Catalog=BeautySalonDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True"))
             {
-                total = Convert.ToInt32((price * sail) / 100);
-                textBox4.Text = ((price - total) * kolVo).ToString();
+                try
+                {
+                    // Устанавливаем соединение с базой данных
+                    connection.Open();
+
+                    // SQL-запрос для обновления данных
+                    string query = "UPDATE Product SET [Количество (шт)] = [Количество (шт)] - @QuantitySubtract WHERE Наименование = @Product";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@QuantitySubtract", textBox3.Text);
+                        command.Parameters.AddWithValue("@Product", comboBox2.SelectedItem.ToString());
+                        // Выполняем запрос к БД
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        // Проверяем, что запрос на обновление коснулся рядов
+                        if (rowsAffected > 0)
+                        {
+                            
+                            if (comboBox1.Text != ""
+                              || dateTimePicker1.Text != ""
+                              || textBox1.Text != ""
+                              || comboBox2.Text != ""
+                              || textBox3.Text != ""
+                              || textBox4.Text != "")
+                            {
+                                ProjectConnection NewConnection = new ProjectConnection();
+                                NewConnection.Connection_Today();
+                                SqlCommand com = new SqlCommand("INSERT INTO ProductPayment ([ID Клиента],Товар, [Цена товара], Дата, [Количество (шт)], Итог) VALUES (@ClientID, @Prod, @PriceProd, @Date,@KolVo, @Itog)", ProjectConnection.sqlConn);
+                                ProjectConnection.sqlConn.Open();
+                                com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
+                                com.Parameters.AddWithValue("@Prod", comboBox2.Text);
+                                com.Parameters.AddWithValue("@PriceProd", textBox1.Text);
+                                com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
+                                com.Parameters.AddWithValue("@KolVo", textBox3.Text);
+                                com.Parameters.AddWithValue("@Itog", textBox4.Text);
+                                com.ExecuteNonQuery();
+                                ProjectConnection.sqlConn.Close();
+                                populate();
+                                ClearControls();
+                                MessageBox.Show("Данные успешно добавлены", "Добавление",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Произошла ошибка");
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Обновление не затронуло ни одного ряда.");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (string.IsNullOrWhiteSpace(comboBox1.Text)
+                        || string.IsNullOrWhiteSpace(comboBox2.Text)
+                        || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
+                        || string.IsNullOrWhiteSpace(textBox3.Text)
+                        || string.IsNullOrWhiteSpace(textBox4.Text)
+                        || string.IsNullOrWhiteSpace(textBox1.Text))
+                    {
+                        MessageBox.Show("Есть незаполненные поля",
+                                        "Ошибка ввода", MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error);
+                        return;
+                    }
+                    return;
+                }
             }
+        }
+
+        private void chekKol()
+        {
+            using (SqlConnection connection = new SqlConnection("Data Source=WUQLY\\SQLEXPRESS;Initial Catalog=BeautySalonDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True"))
+            {
+                try
+                {
+                    connection.Open();
+                    string query = "SELECT [Количество (шт)] FROM Product WHERE Наименование = @Product";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Product", comboBox2.SelectedItem.ToString());
+                        try
+                        {
+                            int stockQuantity = Convert.ToInt32(command.ExecuteScalar());
+                            int requestedQuantity = int.Parse(textBox3.Text);
+                            if (requestedQuantity > stockQuantity)
+                            {
+                                MessageBox.Show("Введённое значение больше значения из базы.",
+                                "Ошибка ввода", MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                                ClearControlsKol();
+                                return;
+                            }
+                            else
+                            {
+                                decimal price, sail, total, kolVo;
+                                price = Decimal.Parse(textBox1.Text);
+                                sail = Decimal.Parse(textBox2.Text);
+                                kolVo = Decimal.Parse(textBox3.Text);
+
+                                if (textBox2.Visible == false)
+                                {
+                                    textBox4.Text = (price * kolVo).ToString();
+                                }
+                                else
+                                {
+                                    total = Convert.ToInt32((price * sail) / 100);
+                                    textBox4.Text = ((price - total) * kolVo).ToString();
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            if (string.IsNullOrWhiteSpace(comboBox1.Text)
+                                            || string.IsNullOrWhiteSpace(comboBox2.Text)
+                                            || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
+                                            || string.IsNullOrWhiteSpace(textBox3.Text)
+                                            || string.IsNullOrWhiteSpace(textBox4.Text)
+                                            || string.IsNullOrWhiteSpace(textBox1.Text))
+                            {
+                                MessageBox.Show("Есть незаполненные поля",
+                                                "Ошибка ввода", MessageBoxButtons.OK,
+                                                MessageBoxIcon.Error);
+                                return;
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    if (string.IsNullOrWhiteSpace(comboBox1.Text)
+                        || string.IsNullOrWhiteSpace(comboBox2.Text)
+                        || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
+                        || string.IsNullOrWhiteSpace(textBox3.Text)
+                        || string.IsNullOrWhiteSpace(textBox4.Text)
+                        || string.IsNullOrWhiteSpace(textBox1.Text))
+                    {
+                        MessageBox.Show("Есть незаполненные поля",
+                                        "Ошибка ввода", MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error);
+                        return;
+                    }
+                    return;
+                }
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            chekKol();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-
-            if (string.IsNullOrWhiteSpace(comboBox1.Text)
-                || string.IsNullOrWhiteSpace(comboBox2.Text)
-                || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
-                || string.IsNullOrWhiteSpace(textBox3.Text)
-                || string.IsNullOrWhiteSpace(textBox4.Text))
-            {
-                MessageBox.Show("Есть незаполненные поля",
-                                "Ошибка ввода", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                return;
-            }
-
-            if (comboBox1.Text != ""
-              || dateTimePicker1.Text != ""
-              || comboBox2.Text != ""
-              || textBox3.Text != ""
-              || textBox4.Text != "")
-            {
-                ProjectConnection NewConnection = new ProjectConnection();
-                NewConnection.Connection_Today();
-                SqlCommand com = new SqlCommand("INSERT INTO ProductPayment ([ID Клиента],Товар, Дата, [Количество (шт)], Итог) VALUES (@ClientID, @Prod, @Date,@KolVo, @Itog)", ProjectConnection.sqlConn);
-                ProjectConnection.sqlConn.Open();
-                com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
-                com.Parameters.AddWithValue("@Prod", comboBox2.Text);
-                com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
-                com.Parameters.AddWithValue("@KolVo", textBox3.Text);
-                com.Parameters.AddWithValue("@Itog", textBox4.Text);
-                com.ExecuteNonQuery();
-                ProjectConnection.sqlConn.Close();
-                populate();
-                ClearControls();
-                MessageBox.Show("Данные успешно добавлены", "Добавление",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
-            }
-            else
-            {
-                MessageBox.Show("Произошла ошибка");
-            }
+            vichetKol();
+            IfKol0();
         }
+
+
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -401,7 +545,8 @@ namespace BeautySalon
                  || string.IsNullOrWhiteSpace(comboBox2.Text)
                  || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
                  || string.IsNullOrWhiteSpace(textBox3.Text)
-                 || string.IsNullOrWhiteSpace(textBox4.Text))
+                 || string.IsNullOrWhiteSpace(textBox4.Text)
+                 || string.IsNullOrWhiteSpace(textBox1.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
                                 "Ошибка ввода", MessageBoxButtons.OK,
@@ -422,13 +567,14 @@ namespace BeautySalon
                     ProjectConnection NewConnection = new ProjectConnection();
                     NewConnection.Connection_Today();
                     ProjectConnection.sqlConn.Open();
-                    SqlCommand com = new SqlCommand("UPDATE ProductPayment set [ID Клиента] = @ClientID, Товар = @Prod, Дата = @Date, [Количество (шт)] = @KolVo, Итог = @Itog where Id = @Id", ProjectConnection.sqlConn);
+                    SqlCommand com = new SqlCommand("UPDATE ProductPayment set [ID Клиента] = @ClientID, Товар = @Prod, [Цена товара] = @PriceProd, Дата = @Date, [Количество (шт)] = @KolVo, Итог = @Itog where Id = @Id", ProjectConnection.sqlConn);
                     com.Parameters.AddWithValue("@Id", SqlDbType.Int).Value = Id;
                     com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
                     com.Parameters.AddWithValue("@Prod", comboBox2.Text);
+                    com.Parameters.AddWithValue("@PriceProd", textBox1.Text);
                     com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
                     com.Parameters.AddWithValue("@KolVo", textBox3.Text);
-                    com.Parameters.AddWithValue("@Itog", textBox4.Text);
+                    com.Parameters.AddWithValue("@Itog", textBox4.Text);  
                     com.ExecuteNonQuery();
                     ProjectConnection.sqlConn.Close();
                     populate();
@@ -444,45 +590,10 @@ namespace BeautySalon
             }
         }
 
+
         private void button3_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(comboBox1.Text)
-                || string.IsNullOrWhiteSpace(comboBox2.Text)
-                || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
-                || string.IsNullOrWhiteSpace(textBox3.Text)
-                || string.IsNullOrWhiteSpace(textBox4.Text))
-            {
-                MessageBox.Show("Есть незаполненные поля",
-                                "Ошибка ввода", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                return;
-            }
-
-
-            DialogResult dialogResult = MessageBox.Show("Вы хотите удалить запиcь?",
-                    "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-            if (dialogResult == DialogResult.Yes)
-            {
-                if (Id != 0)
-                {
-                    ProjectConnection NewConnection = new ProjectConnection();
-                    NewConnection.Connection_Today();
-                    ProjectConnection.sqlConn.Open();
-                    SqlCommand command = new SqlCommand("DELETE ProductPayment where Id = @Id", ProjectConnection.sqlConn);
-                    command.Parameters.AddWithValue("@Id", Id);
-                    command.ExecuteNonQuery();
-                    ProjectConnection.sqlConn.Close();
-                    populate();
-                    ClearControls();
-                    MessageBox.Show("Вы успешно удалили запись",
-                    "Удаление", MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-                }
-            }
-            if (dialogResult == DialogResult.No)
-            {
-                return;
-            }
+            plusKol();
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
@@ -585,9 +696,10 @@ namespace BeautySalon
                 Id = Convert.ToInt32(row.Cells[0].Value.ToString());
                 comboBox1.Text = row.Cells[1].Value.ToString();
                 comboBox2.Text = row.Cells[2].Value.ToString();
-                dateTimePicker1.Value = Convert.ToDateTime(row.Cells[3].Value.ToString());
-                textBox3.Text = row.Cells[4].Value.ToString();
-                textBox4.Text = row.Cells[5].Value.ToString();
+                textBox1.Text = row.Cells[3].Value.ToString();
+                dateTimePicker1.Value = Convert.ToDateTime(row.Cells[4].Value.ToString());
+                textBox3.Text = row.Cells[5].Value.ToString();
+                textBox4.Text = row.Cells[6].Value.ToString();
             }
         }
 
@@ -609,6 +721,10 @@ namespace BeautySalon
                 if (e.KeyChar != '.' || textBox3.Text.IndexOf(".") != 0)
                 {
                     e.Handled = true;
+                }
+                else if(textBox3.Text.Length == 0)
+                {
+                    if (e.KeyChar == '0') e.Handled = true;
                 }
             }
 
@@ -632,6 +748,18 @@ namespace BeautySalon
 
                 e.Handled = true;
             }
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void типУслугиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TypeOfProd TP = new TypeOfProd();
+            this.Hide();
+            TP.Show();
         }
     }
 }

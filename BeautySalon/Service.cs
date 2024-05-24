@@ -170,7 +170,7 @@ namespace BeautySalon
                     ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
-                    MessageBox.Show("Данные успешно добавлены", "Добавление",
+                    MessageBox.Show("Данные успешно отредактированы", "Редактирование",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
                 }
@@ -232,7 +232,6 @@ namespace BeautySalon
             if (MyConnection.type == "K")
             {
                 сотрудникиToolStripMenuItem.Visible = false;
-                записьНаУслугуToolStripMenuItem.Visible = false;
             }
             populate();
         }
@@ -391,6 +390,13 @@ namespace BeautySalon
                     e.Handled = true;
                 }
             }
+        }
+
+        private void типУслугиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TypeOfProd TP = new TypeOfProd();
+            this.Hide();
+            TP.Show();
         }
     }
 }

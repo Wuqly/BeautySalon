@@ -101,8 +101,30 @@ namespace BeautySalon
             textBox3.Text = "";
         }
 
+        public Boolean chekProd()
+        {
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            DataTable dataTable = new DataTable();
+            SqlDataAdapter ad = new SqlDataAdapter();
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Product where Наименование = '" + textBox1.Text + "'", ProjectConnection.sqlConn);
+            ad.SelectCommand = sqlCommand;
+            ad.Fill(dataTable);
+            if (dataTable.Rows.Count > 0)
+            {
+                MessageBox.Show("Такой товар уже существует",
+                "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
+
             if (string.IsNullOrWhiteSpace(textBox1.Text)
                 || string.IsNullOrWhiteSpace(textBox2.Text)
                 || string.IsNullOrWhiteSpace(comboBox1.Text)
@@ -114,6 +136,10 @@ namespace BeautySalon
                 return;
             }
 
+            if (chekProd())
+            {
+                return;
+            }
             if (textBox1.Text != ""
               || comboBox1.Text != ""
               || textBox2.Text != ""
@@ -165,9 +191,8 @@ namespace BeautySalon
                 {
                     ProjectConnection NewConnection = new ProjectConnection();
                     NewConnection.Connection_Today();
-                    SqlCommand com = new SqlCommand("UPDATE Product set Наименование = @Name, [Вид товара] = @Type, [Цена (₽)] = @Price, [Количество (шт)] = @Quantity Where Id = @Id", ProjectConnection.sqlConn);
+                    SqlCommand com = new SqlCommand("UPDATE Product set [Вид товара] = @Type, [Цена (₽)] = @Price, [Количество (шт)] = @Quantity Where Наименование = @Name", ProjectConnection.sqlConn);
                     ProjectConnection.sqlConn.Open();
-                    com.Parameters.AddWithValue("@Id", Id);
                     com.Parameters.AddWithValue("@Name", textBox1.Text);
                     com.Parameters.AddWithValue("@Type", comboBox1.Text);
                     com.Parameters.AddWithValue("@Price", textBox2.Text);
@@ -213,8 +238,8 @@ namespace BeautySalon
                     ProjectConnection NewConnection = new ProjectConnection();
                     NewConnection.Connection_Today();
                     ProjectConnection.sqlConn.Open();
-                    SqlCommand command = new SqlCommand("DELETE Product where Id = @Id", ProjectConnection.sqlConn);
-                    command.Parameters.AddWithValue("@Id", Id);
+                    SqlCommand command = new SqlCommand("DELETE Product where Наименование = @Name", ProjectConnection.sqlConn);
+                    command.Parameters.AddWithValue("@Name", textBox1.Text);
                     command.ExecuteNonQuery();
                     ProjectConnection.sqlConn.Close();
                     populate();
@@ -235,11 +260,10 @@ namespace BeautySalon
             if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = dataGridView2.Rows[e.RowIndex];
-                Id = Convert.ToInt32(row.Cells[0].Value.ToString());
-                textBox1.Text = row.Cells[1].Value.ToString();
-                comboBox1.Text = row.Cells[2].Value.ToString();
-                textBox2.Text = row.Cells[3].Value.ToString();
-                textBox3.Text = row.Cells[4].Value.ToString();
+                textBox1.Text = row.Cells[0].Value.ToString();
+                comboBox1.Text = row.Cells[1].Value.ToString();
+                textBox2.Text = row.Cells[2].Value.ToString();
+                textBox3.Text = row.Cells[3].Value.ToString();
 
             }
         }
@@ -256,7 +280,6 @@ namespace BeautySalon
             if (MyConnection.type == "K")
             {
                 toolStripMenuItem7.Visible = false;
-                toolStripMenuItem4.Visible = false;
             }
         }
 
@@ -445,6 +468,18 @@ namespace BeautySalon
                     e.Handled = true;
                 }
             }
+        }
+
+        private void типУслугиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TypeOfProd TP = new TypeOfProd();
+            this.Hide();
+            TP.Show();
+        }
+
+        private void menuStrip2_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
 }

@@ -12,19 +12,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace BeautySalon
 {
-    public partial class Client : Form
+    public partial class TypeOfProd : Form
     {
-        int Id = 0;
         private Size _initialFormSize;
 
         [DllImport("gdi32.dll")]
         private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont, IntPtr pdv, out uint pcFonts);
         private PrivateFontCollection fonts = new PrivateFontCollection();
-        public Client()
+        public TypeOfProd()
         {
             InitializeComponent();
             _initialFormSize = this.Size;
@@ -38,9 +36,8 @@ namespace BeautySalon
             AddFontMemResourceEx(fontPtr, (uint)fontData.Length, IntPtr.Zero, out dummy);
             Marshal.FreeCoTaskMem(fontPtr);
             Font myFont = new Font(fonts.Families[0], 14.0F);
-            menuStrip2.Font = myFont;
-            label1.Font = myFont;
-
+            label5.Font = myFont;
+            menuStrip1.Font = myFont;
 
             byte[] fontData1 = Properties.Resources.midium; // Измените "YourFontFile" на имя вашего файла ресурса шрифта
             IntPtr fontPtr1 = Marshal.AllocCoTaskMem(fontData1.Length);
@@ -54,56 +51,18 @@ namespace BeautySalon
             groupBox2.Font = myFont1;
             groupBox3.Font = myFont1;
             label3.Font = myFont1;
-            label5.Font = myFont1;
-            label6.Font = myFont1;
-            label7.Font = myFont1;
-            label8.Font = myFont1;
             button1.Font = myFont1;
             button2.Font = myFont1;
             button3.Font = myFont1;
         }
 
-        private void Client_Load(object sender, EventArgs e)
-        {
-            if (MyConnection.type == "M")
-            {
-                toolStripMenuItem7.Visible = false;
-            }
-
-            if (MyConnection.type == "K")
-            {
-                toolStripMenuItem7.Visible = false;
-            }
-            populate();
-        }
-
-        private Boolean chekPhone()
-        {
-            ProjectConnection NewConnection = new ProjectConnection();
-            NewConnection.Connection_Today();
-            DataTable dataTable = new DataTable();
-            SqlDataAdapter ad = new SqlDataAdapter();
-            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Clients where [Номер телефона] = '" + maskedTextBox1.Text + "'", ProjectConnection.sqlConn);
-            ad.SelectCommand = sqlCommand;
-            ad.Fill(dataTable);
-            if (dataTable.Rows.Count > 0)
-            {
-                MessageBox.Show("Такой номер уже существует",
-                "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
 
         private void populate()
         {
             ProjectConnection NewConnection = new ProjectConnection();
             NewConnection.Connection_Today();
             ProjectConnection.sqlConn.Open();
-            string Myquary = "select * from Clients";
+            string Myquary = "select * from TypeOfProd";
             SqlCommand cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd;
@@ -115,23 +74,12 @@ namespace BeautySalon
 
         private void ClearControls()
         {
-            Id = 0;
             textBox1.Text = "";
-            textBox2.Text = "";
-            textBox3.Text = "";
-            maskedTextBox1.Text = "";
-            textBox4.Text = "";
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-
-
-            if (string.IsNullOrWhiteSpace(textBox1.Text)
-                || string.IsNullOrWhiteSpace(textBox2.Text)
-                || string.IsNullOrWhiteSpace(textBox3.Text)
-                || string.IsNullOrWhiteSpace(maskedTextBox1.Text)
-                || string.IsNullOrWhiteSpace(textBox4.Text))
+            if (string.IsNullOrWhiteSpace(textBox1.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
                                 "Ошибка ввода", MessageBoxButtons.OK,
@@ -139,27 +87,13 @@ namespace BeautySalon
                 return;
             }
 
-            if (chekPhone())
-            {
-                return;
-            }
-
-            if (textBox1.Text != ""
-              || textBox2.Text != ""
-              || textBox3.Text != ""
-              || maskedTextBox1.Text != ""
-              || textBox4.Text != "")
+            if (textBox1.Text != "")
             {
                 ProjectConnection NewConnection = new ProjectConnection();
                 NewConnection.Connection_Today();
-                SqlCommand com = new SqlCommand("INSERT INTO Clients (Фамилия, Имя, Отчество, [Номер телефона], [Скидка (%)])" +
-                    "VALUES (@fName, @sName, @tName, @Phone, @Sail)", ProjectConnection.sqlConn);
+                SqlCommand com = new SqlCommand("INSERT INTO TypeOfProd (Название) VALUES (@Name)", ProjectConnection.sqlConn);
                 ProjectConnection.sqlConn.Open();
-                com.Parameters.AddWithValue("@fName", textBox1.Text);
-                com.Parameters.AddWithValue("@sName", textBox2.Text);
-                com.Parameters.AddWithValue("@tName", textBox3.Text);
-                com.Parameters.AddWithValue("@Phone", maskedTextBox1.Text);
-                com.Parameters.AddWithValue("@Sail", textBox4.Text);
+                com.Parameters.AddWithValue("@Name", textBox1.Text);
                 com.ExecuteNonQuery();
                 ProjectConnection.sqlConn.Close();
                 populate();
@@ -174,40 +108,32 @@ namespace BeautySalon
             }
         }
 
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(textBox1.Text)
-                || string.IsNullOrWhiteSpace(textBox2.Text)
-                || string.IsNullOrWhiteSpace(textBox3.Text)
-                || string.IsNullOrWhiteSpace(maskedTextBox1.Text)
-                || string.IsNullOrWhiteSpace(textBox4.Text))
+            if (string.IsNullOrWhiteSpace(textBox1.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
                                 "Ошибка ввода", MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                 return;
             }
+
             DialogResult dialogResult = MessageBox.Show("Вы хотите отредактировать запись?",
-            "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             if (dialogResult == DialogResult.Yes)
             {
-                if (Id != 0
-              || textBox1.Text != ""
-              || textBox2.Text != ""
-              || textBox3.Text != ""
-              || maskedTextBox1.Text != ""
-              || textBox4.Text != "")
+                if (textBox1.Text != "")
                 {
                     ProjectConnection NewConnection = new ProjectConnection();
                     NewConnection.Connection_Today();
-                    SqlCommand com = new SqlCommand("UPDATE Clients set Фамилия = @fName, Имя = @sName, Отчество = @tName, [Номер телефона] = @Phone, [Скидка (%)] = @Sail Where Id = @Id", ProjectConnection.sqlConn);
+                    SqlCommand com = new SqlCommand("UPDATE TypeOfProd Where Название = @Name", ProjectConnection.sqlConn);
                     ProjectConnection.sqlConn.Open();
-                    com.Parameters.AddWithValue("@Id", Id);
-                    com.Parameters.AddWithValue("@fName", textBox1.Text);
-                    com.Parameters.AddWithValue("@sName", textBox2.Text);
-                    com.Parameters.AddWithValue("@tName", textBox3.Text);
-                    com.Parameters.AddWithValue("@Phone", maskedTextBox1.Text);
-                    com.Parameters.AddWithValue("@Sail", textBox4.Text);
+                    com.Parameters.AddWithValue("@Name", textBox1.Text);
                     com.ExecuteNonQuery();
                     ProjectConnection.sqlConn.Close();
                     populate();
@@ -221,16 +147,16 @@ namespace BeautySalon
                     MessageBox.Show("Произошла ошибка");
                 }
             }
-            
+
+            if (dialogResult == DialogResult.No)
+            {
+                return;
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(textBox1.Text)
-                || string.IsNullOrWhiteSpace(textBox2.Text)
-                || string.IsNullOrWhiteSpace(textBox3.Text)
-                || string.IsNullOrWhiteSpace(maskedTextBox1.Text)
-                || string.IsNullOrWhiteSpace(textBox4.Text))
+            if (string.IsNullOrWhiteSpace(textBox1.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
                                 "Ошибка ввода", MessageBoxButtons.OK,
@@ -238,17 +164,17 @@ namespace BeautySalon
                 return;
             }
 
-            DialogResult dialogResult = MessageBox.Show("Вы хотите удалить запиcь?",
+            DialogResult dialogResult = MessageBox.Show("Вы хотите удалить запись?",
                     "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             if (dialogResult == DialogResult.Yes)
             {
-                if (Id != 0)
+                if (textBox1.Text != "")
                 {
                     ProjectConnection NewConnection = new ProjectConnection();
                     NewConnection.Connection_Today();
                     ProjectConnection.sqlConn.Open();
-                    SqlCommand command = new SqlCommand("DELETE Clients where Id = @Id", ProjectConnection.sqlConn);
-                    command.Parameters.AddWithValue("@Id", Id);
+                    SqlCommand command = new SqlCommand("DELETE TypeOfProd where Название = @Name", ProjectConnection.sqlConn);
+                    command.Parameters.AddWithValue("@Name", textBox1.Text);
                     command.ExecuteNonQuery();
                     ProjectConnection.sqlConn.Close();
                     populate();
@@ -288,103 +214,67 @@ namespace BeautySalon
             }
         }
 
-        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
-            {
-                DataGridViewRow row = dataGridView2.Rows[e.RowIndex];
-                Id = Convert.ToInt32(row.Cells[0].Value.ToString());
-                textBox1.Text = row.Cells[1].Value.ToString();
-                textBox2.Text = row.Cells[2].Value.ToString();
-                textBox3.Text = row.Cells[3].Value.ToString();
-                maskedTextBox1.Text = row.Cells[4].Value.ToString();
-                textBox4.Text = row.Cells[5].Value.ToString();
-
-            }
-        }
-
-
-        private void maskedTextBox1_Enter(object sender, EventArgs e)
-        {
-            this.BeginInvoke((MethodInvoker)delegate ()
-            {
-                maskedTextBox1.Select(0, 0);
-            });
-        }
-
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        private void выходToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Sign s = new Sign();
             this.Hide();
             s.Show();
         }
 
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        private void главнаяToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Main M = new Main();
             this.Hide();
             M.Show();
         }
 
-        private void toolStripMenuItem4_Click(object sender, EventArgs e)
+        private void записьНаУслугуToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Records R = new Records();
             this.Hide();
             R.Show();
         }
 
-        private void toolStripMenuItem5_Click(object sender, EventArgs e)
+        private void каталогУслугToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Service Serv = new Service();
             this.Hide();
             Serv.Show();
         }
 
-        private void toolStripMenuItem6_Click(object sender, EventArgs e)
+        private void клиентыToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Client Client = new Client();
             this.Hide();
             Client.Show();
         }
 
-        private void toolStripMenuItem7_Click(object sender, EventArgs e)
+        private void сотрудникиToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Stuff Stuff = new Stuff();
             this.Hide();
             Stuff.Show();
         }
 
-        private void toolStripMenuItem8_Click(object sender, EventArgs e)
+        private void косметическиеСредстваToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Product Product = new Product();
             this.Hide();
             Product.Show();
         }
 
-        private void toolStripMenuItem10_Click(object sender, EventArgs e)
+        private void оплатаУслугиToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ServicePayment SP = new ServicePayment();
             this.Hide();
             SP.Show();
         }
 
-        private void toolStripMenuItem11_Click(object sender, EventArgs e)
+        private void опToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ProductPayment PP = new ProductPayment();
             this.Hide();
             PP.Show();
-        }
-
-        private void Client_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            Application.Exit();
-        }
-
-        private void pictureBox5_Click(object sender, EventArgs e)
-        {
-            Sign s = new Sign();
-            this.Hide();
-            s.Show();
         }
 
         private void pictureBox4_Click(object sender, EventArgs e)
@@ -401,41 +291,40 @@ namespace BeautySalon
             }
         }
 
+        private void TypeOfProd_Load(object sender, EventArgs e)
+        {
+            populate();
+            if (MyConnection.type == "M")
+            {
+                сотрудникиToolStripMenuItem.Visible = false;
+            }
+
+            if (MyConnection.type == "K")
+            {
+                сотрудникиToolStripMenuItem.Visible = false;
+            }
+        }
+
+        private void TypeOfProd_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void pictureBox5_Click(object sender, EventArgs e)
+        {
+            Sign s = new Sign();
+            this.Hide();
+            s.Show();
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void pictureBox3_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
-        }
-
-        private void textBox4_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Back)
-            {
-                var selectionStart = textBox4.SelectionStart;
-                if (textBox4.SelectionLength > 0)
-                {
-                    textBox4.Text = textBox4.Text.Substring(0, selectionStart) + textBox4.Text.Substring(selectionStart + textBox4.SelectionLength);
-                    textBox4    .SelectionStart = selectionStart;
-                }
-                else if (selectionStart > 0)
-                {
-                    textBox4.Text = textBox4.Text.Substring(0, selectionStart - 1) + textBox4.Text.Substring(selectionStart);
-                    textBox4.SelectionStart = selectionStart - 1;
-                }
-
-                e.Handled = true;
-            }
-        }
-
-        private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!Char.IsDigit(e.KeyChar))
-            {
-                // Запрет на ввод более одной десятичной точки.
-                if (e.KeyChar != '.' || textBox4.Text.IndexOf(".") != 0)
-                {
-                    e.Handled = true;
-                }
-            }
         }
 
         private void типУслугиToolStripMenuItem_Click(object sender, EventArgs e)
@@ -444,6 +333,14 @@ namespace BeautySalon
             this.Hide();
             TP.Show();
         }
+
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dataGridView2.Rows[e.RowIndex];
+                textBox1.Text = row.Cells[0].Value.ToString();
+            }
+        }
     }
 }
-

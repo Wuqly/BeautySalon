@@ -117,6 +117,12 @@
     <Compile Include="Stuff.Designer.cs">
       <DependentUpon>Stuff.cs</DependentUpon>
     </Compile>
+    <Compile Include="TypeOfProd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TypeOfProd.Designer.cs">
+      <DependentUpon>TypeOfProd.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Client.resx">
       <DependentUpon>Client.cs</DependentUpon>
     </EmbeddedResource>
@@ -154,6 +160,9 @@
     <EmbeddedResource Include="Stuff.resx">
       <DependentUpon>Stuff.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TypeOfProd.resx">
+      <DependentUpon>TypeOfProd.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="fonts\1\VigranMaroll-2OzWK.otf" />
     <None Include="fonts\midium\ZenMaruGothic-Medium.ttf" />
     <None Include="packages.config" />
@@ -173,13 +182,7 @@
     <None Include="Resources\123.jpg" />
     <None Include="Resources\logo.png" />
     <Content Include="MetroFramework.txt" />
-    <Content Include="VigranMaroll-2OzWK.otf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Selino-mL0Lj.otf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ZenMaruGothic-Medium.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

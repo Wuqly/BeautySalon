@@ -43,6 +43,7 @@
             this.каталогУслугToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.записьНаУслугуToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.формыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.типУслугиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.главнаяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -62,6 +63,8 @@
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -77,7 +80,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Comic Sans MS", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(144, 94);
+            this.label1.Location = new System.Drawing.Point(144, 84);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(57, 19);
@@ -87,7 +90,7 @@
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(283, 22);
+            this.comboBox1.Location = new System.Drawing.Point(283, 21);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(182, 24);
             this.comboBox1.TabIndex = 24;
@@ -130,7 +133,7 @@
             // 
             // dateTimePicker1
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(283, 56);
+            this.dateTimePicker1.Location = new System.Drawing.Point(283, 51);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(182, 22);
             this.dateTimePicker1.TabIndex = 23;
@@ -200,10 +203,18 @@
             this.каталогУслугToolStripMenuItem,
             this.клиентыToolStripMenuItem,
             this.сотрудникиToolStripMenuItem,
-            this.косметическиеСредстваToolStripMenuItem});
+            this.косметическиеСредстваToolStripMenuItem,
+            this.типУслугиToolStripMenuItem});
             this.формыToolStripMenuItem.Name = "формыToolStripMenuItem";
             this.формыToolStripMenuItem.Size = new System.Drawing.Size(188, 29);
             this.формыToolStripMenuItem.Text = "Рабочие страницы";
+            // 
+            // типУслугиToolStripMenuItem
+            // 
+            this.типУслугиToolStripMenuItem.Name = "типУслугиToolStripMenuItem";
+            this.типУслугиToolStripMenuItem.Size = new System.Drawing.Size(232, 30);
+            this.типУслугиToolStripMenuItem.Text = "Вид товара";
+            this.типУслугиToolStripMenuItem.Click += new System.EventHandler(this.типУслугиToolStripMenuItem_Click);
             // 
             // главнаяToolStripMenuItem
             // 
@@ -240,7 +251,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Comic Sans MS", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(144, 27);
+            this.label3.Location = new System.Drawing.Point(144, 26);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(91, 19);
@@ -287,7 +298,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Comic Sans MS", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(144, 59);
+            this.label2.Location = new System.Drawing.Point(144, 54);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 19);
@@ -316,6 +327,8 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.comboBox3);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label1);
@@ -330,7 +343,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.groupBox1.Location = new System.Drawing.Point(12, 373);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(916, 159);
+            this.groupBox1.Size = new System.Drawing.Size(916, 171);
             this.groupBox1.TabIndex = 28;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Создать запись";
@@ -338,7 +351,7 @@
             // comboBox3
             // 
             this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(283, 121);
+            this.comboBox3.Location = new System.Drawing.Point(283, 109);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(182, 24);
             this.comboBox3.TabIndex = 28;
@@ -347,7 +360,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Comic Sans MS", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(144, 126);
+            this.label4.Location = new System.Drawing.Point(144, 114);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(50, 19);
@@ -357,10 +370,11 @@
             // comboBox2
             // 
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(283, 89);
+            this.comboBox2.Location = new System.Drawing.Point(283, 79);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(182, 24);
             this.comboBox2.TabIndex = 25;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // groupBox3
             // 
@@ -444,6 +458,25 @@
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Comic Sans MS", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(144, 144);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(44, 19);
+            this.label6.TabIndex = 29;
+            this.label6.Text = "Цена";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(319, 139);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(110, 22);
+            this.textBox1.TabIndex = 45;
+            // 
             // Records
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -515,6 +548,9 @@
         private System.Windows.Forms.PictureBox pictureBox5;
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.ToolStripMenuItem типУслугиToolStripMenuItem;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

@@ -55,6 +55,7 @@ namespace BeautySalon
             label2.Font = myFont1;
             label3.Font = myFont1;
             label4.Font = myFont1;
+            label6.Font = myFont1;
             button1.Font = myFont1;
             button2.Font = myFont1;
             button3.Font = myFont1;
@@ -69,7 +70,7 @@ namespace BeautySalon
             NewConnection.Connection_Today();
             DataTable dataTable = new DataTable();
             SqlDataAdapter ad = new SqlDataAdapter();
-            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Records where Время = '" + comboBox3.Text + "'", ProjectConnection.sqlConn);
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Records where Время = '" + comboBox3.Text + "' and Дата = '" + dateTimePicker1.Text + "'", ProjectConnection.sqlConn);
             ad.SelectCommand = sqlCommand;
             ad.Fill(dataTable);
             if (dataTable.Rows.Count > 0)
@@ -91,6 +92,8 @@ namespace BeautySalon
             dateTimePicker1.Text = "";
             comboBox2.SelectedIndex = -1;
             comboBox3.SelectedIndex = -1;
+            textBox1.Text = "";
+
         }
 
         private void populateClient()
@@ -166,10 +169,11 @@ namespace BeautySalon
             {
                 return;
             }
-            if (string.IsNullOrWhiteSpace(comboBox1.Text) 
-                || string.IsNullOrWhiteSpace(comboBox2.Text) 
-                || string.IsNullOrWhiteSpace(dateTimePicker1.Text) 
-                || string.IsNullOrWhiteSpace(comboBox3.Text))
+            if (string.IsNullOrWhiteSpace(comboBox1.Text)
+                || string.IsNullOrWhiteSpace(comboBox2.Text)
+                || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
+                || string.IsNullOrWhiteSpace(comboBox3.Text)
+                || string.IsNullOrWhiteSpace(textBox1.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
                                 "Ошибка ввода", MessageBoxButtons.OK,
@@ -180,16 +184,18 @@ namespace BeautySalon
             if (comboBox1.Text != ""
               || dateTimePicker1.Text != ""
               || comboBox2.Text != ""
-              || comboBox3.Text != "")
+              || comboBox3.Text != ""
+              || textBox1.Text != "")
             {
                 ProjectConnection NewConnection = new ProjectConnection();
                 NewConnection.Connection_Today();
-                SqlCommand com = new SqlCommand("INSERT INTO Records ([ID Клиента], [Дата и время], Услуга, Время) VALUES (@ClientID, @Date, @Srevice, @Time)", ProjectConnection.sqlConn);
+                SqlCommand com = new SqlCommand("INSERT INTO Records ([ID Клиента], Дата, Услуга, Время, [Цена (₽)]) VALUES (@ClientID, @Date, @Srevice, @Time, @Price)", ProjectConnection.sqlConn);
                 ProjectConnection.sqlConn.Open();
                 com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
                 com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
                 com.Parameters.AddWithValue("@Srevice", comboBox2.Text);
                 com.Parameters.AddWithValue("@Time", comboBox3.Text);
+                com.Parameters.AddWithValue("@Price", textBox1.Text);
                 com.ExecuteNonQuery();
                 ProjectConnection.sqlConn.Close();
                 populate();
@@ -207,7 +213,11 @@ namespace BeautySalon
         private void button2_Click(object sender, EventArgs e)
         {
 
-            if (string.IsNullOrWhiteSpace(comboBox1.Text) || string.IsNullOrWhiteSpace(comboBox2.Text) || string.IsNullOrWhiteSpace(dateTimePicker1.Text) || string.IsNullOrWhiteSpace(comboBox3.Text))
+            if (string.IsNullOrWhiteSpace(comboBox1.Text)
+                || string.IsNullOrWhiteSpace(comboBox2.Text)
+                || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
+                || string.IsNullOrWhiteSpace(comboBox3.Text)
+                || string.IsNullOrWhiteSpace(textBox1.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
                                 "Ошибка ввода", MessageBoxButtons.OK,
@@ -223,23 +233,25 @@ namespace BeautySalon
             || comboBox1.Text != ""
             || dateTimePicker1 != null
             || comboBox2.Text != ""
-            || comboBox3.Text != "")
+            || comboBox3.Text != ""
+            || textBox1.Text != "")
                 {
                     ProjectConnection NewConnection = new ProjectConnection();
                     NewConnection.Connection_Today();
                     ProjectConnection.sqlConn.Open();
-                    SqlCommand com = new SqlCommand("UPDATE Records set [ID Клиента] = @ClientID, [Дата и время] = @Date, Услуга = @Srevice, Время = @Time where Id = @Id", ProjectConnection.sqlConn);
+                    SqlCommand com = new SqlCommand("UPDATE Records set [ID Клиента] = @ClientID, Дата = @Date, Услуга = @Srevice, Время = @Time, [Цена (₽)] = @Price where Id = @Id", ProjectConnection.sqlConn);
                     com.Parameters.AddWithValue("@Id", SqlDbType.Int).Value = Id;
                     com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
                     com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
                     com.Parameters.AddWithValue("@Srevice", comboBox2.Text);
                     com.Parameters.AddWithValue("@Time", comboBox3.Text);
+                    com.Parameters.AddWithValue("@Price", textBox1.Text);
                     com.ExecuteNonQuery();
                     ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
-                    MessageBox.Show("Вы успешно отредактировали запись",
-                    "Редактирование", MessageBoxButtons.OK,
+                    MessageBox.Show("Данные успешно отредактированы", "Редактирование",
+                    MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
                 }
                 else if (dialogResult == DialogResult.No)
@@ -252,7 +264,11 @@ namespace BeautySalon
         private void button3_Click(object sender, EventArgs e)
         {
 
-            if (string.IsNullOrWhiteSpace(comboBox1.Text) || string.IsNullOrWhiteSpace(comboBox2.Text) || string.IsNullOrWhiteSpace(dateTimePicker1.Text) || string.IsNullOrWhiteSpace(comboBox3.Text))
+            if (string.IsNullOrWhiteSpace(comboBox1.Text)
+                || string.IsNullOrWhiteSpace(comboBox2.Text)
+                || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
+                || string.IsNullOrWhiteSpace(comboBox3.Text)
+                || string.IsNullOrWhiteSpace(textBox1.Text))
             {
                 MessageBox.Show("Есть незаполненные поля",
                                 "Ошибка ввода", MessageBoxButtons.OK,
@@ -292,6 +308,7 @@ namespace BeautySalon
             populateClient();
             populateService();
             populateTime();
+            ClearControls();
             if (MyConnection.type == "M")
             {
                 сотрудникиToolStripMenuItem.Visible = false;
@@ -300,7 +317,6 @@ namespace BeautySalon
             if (MyConnection.type == "K")
             {
                 сотрудникиToolStripMenuItem.Visible = false;
-                записьНаУслугуToolStripMenuItem.Visible = false;
             }
         }
         private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -313,6 +329,7 @@ namespace BeautySalon
                 dateTimePicker1.Value = Convert.ToDateTime(row.Cells[2].Value.ToString());
                 comboBox2.Text = row.Cells[3].Value.ToString();
                 comboBox3.Text = row.Cells[4].Value.ToString();
+                textBox1.Text = row.Cells[5].Value.ToString();
 
             }
         }
@@ -438,6 +455,30 @@ namespace BeautySalon
         private void pictureBox3_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void типУслугиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TypeOfProd TP = new TypeOfProd();
+            this.Hide();
+            TP.Show();
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
+            comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            SqlCommand cmd = new SqlCommand("SELECT [Цена (₽)] FROM Service where Наименование = @Name", ProjectConnection.sqlConn);
+            cmd.Parameters.AddWithValue("@Name", comboBox2.Text);
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                string price = reader["Цена (₽)"].ToString();
+                textBox1.Text = price;
+
+            }
         }
     }
 }

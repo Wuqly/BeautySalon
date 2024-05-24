@@ -301,7 +301,7 @@ namespace BeautySalon
                 return;
             }
 
-            DialogResult dialogResult = MessageBox.Show("Вы хотите отредактировать cсотрудника?",
+            DialogResult dialogResult = MessageBox.Show("Вы хотите отредактировать запись?",
             "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             if (dialogResult == DialogResult.Yes)
             {
@@ -334,7 +334,7 @@ namespace BeautySalon
                     ProjectConnection.sqlConn.Close();
                     populate();
                     ClearControls();
-                    MessageBox.Show("Данные успешно редактированы", "Редактирование",
+                    MessageBox.Show("Данные успешно отредактированы", "Подтверждение",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
                 }
@@ -414,7 +414,6 @@ namespace BeautySalon
             if (MyConnection.type == "K")
             {
                 toolStripMenuItem7.Visible = false;
-                toolStripMenuItem4.Visible = false;
             }
         }
 
@@ -584,6 +583,13 @@ namespace BeautySalon
         private void groupBox1_Enter(object sender, EventArgs e)
         {
 
+        }
+
+        private void типУслугиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TypeOfProd TP = new TypeOfProd();
+            this.Hide();
+            TP.Show();
         }
     }
 }

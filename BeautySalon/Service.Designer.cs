@@ -38,6 +38,7 @@
             this.клиентыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.сотрудникиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.косметическиеСредстваToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.типУслугиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.оплатаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.оплатаУслугиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.опToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,7 +83,7 @@
             this.оплатаToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(248, 42);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(455, 33);
+            this.menuStrip1.Size = new System.Drawing.Size(575, 33);
             this.menuStrip1.TabIndex = 27;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -107,7 +108,8 @@
             this.каталогУслугToolStripMenuItem,
             this.клиентыToolStripMenuItem,
             this.сотрудникиToolStripMenuItem,
-            this.косметическиеСредстваToolStripMenuItem});
+            this.косметическиеСредстваToolStripMenuItem,
+            this.типУслугиToolStripMenuItem});
             this.формыToolStripMenuItem.Name = "формыToolStripMenuItem";
             this.формыToolStripMenuItem.Size = new System.Drawing.Size(188, 29);
             this.формыToolStripMenuItem.Text = "Рабочие страницы";
@@ -146,6 +148,13 @@
             this.косметическиеСредстваToolStripMenuItem.Size = new System.Drawing.Size(232, 30);
             this.косметическиеСредстваToolStripMenuItem.Text = "Товары";
             this.косметическиеСредстваToolStripMenuItem.Click += new System.EventHandler(this.косметическиеСредстваToolStripMenuItem_Click);
+            // 
+            // типУслугиToolStripMenuItem
+            // 
+            this.типУслугиToolStripMenuItem.Name = "типУслугиToolStripMenuItem";
+            this.типУслугиToolStripMenuItem.Size = new System.Drawing.Size(232, 30);
+            this.типУслугиToolStripMenuItem.Text = "Вид товара";
+            this.типУслугиToolStripMenuItem.Click += new System.EventHandler(this.типУслугиToolStripMenuItem_Click);
             // 
             // оплатаToolStripMenuItem
             // 
@@ -461,5 +470,6 @@
         private System.Windows.Forms.PictureBox pictureBox5;
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.ToolStripMenuItem типУслугиToolStripMenuItem;
     }
 }

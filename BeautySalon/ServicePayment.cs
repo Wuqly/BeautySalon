@@ -25,8 +25,6 @@ namespace BeautySalon
     public partial class ServicePayment : Form
     {
 
-        SqlDataReader reader;
-        SqlCommand cmd;
         int Id = 0;
         private Size _initialFormSize;
 
@@ -69,8 +67,8 @@ namespace BeautySalon
             label9.Font = myFont1;
             label1.Font = myFont1;
             label2.Font = myFont1;
+            label6.Font = myFont1;
             button1.Font = myFont1;
-            button2.Font = myFont1;
             button3.Font = myFont1;
             button4.Font = myFont1;
             button5.Font = myFont1;
@@ -79,13 +77,13 @@ namespace BeautySalon
         private void ClearControls()
         {
             Id = 0;
-            comboBox1.SelectedIndex = -1;
+            comboBox3.SelectedIndex = -1;
+            textBox3.Text = "";
             dateTimePicker1.Text = "";
-            comboBox2.SelectedIndex = -1;
+            textBox5.Text = "";
             textBox4.Text = "";
             textBox1.Text = "";
             textBox2.Text = "";
-
         }
 
         private void populate()
@@ -102,32 +100,16 @@ namespace BeautySalon
             ProjectConnection.sqlConn.Close();
         }
 
-        private void populateClient()
+        private void populateRec()
         {
             ProjectConnection NewConnection = new ProjectConnection();
             NewConnection.Connection_Today();
-            string Myquary = "select * from Clients";
-            cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
+            SqlCommand cmd = new SqlCommand("select * from Records", ProjectConnection.sqlConn);
             ProjectConnection.sqlConn.Open();
-            reader = cmd.ExecuteReader();
+            SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                comboBox1.Items.Add(reader["Id"]);
-            }
-            ProjectConnection.sqlConn.Close();
-        }
-
-        private void populateService()
-        {
-            ProjectConnection NewConnection = new ProjectConnection();
-            NewConnection.Connection_Today();
-            string Myquary = "select * from Service";
-            cmd = new SqlCommand(Myquary, ProjectConnection.sqlConn);
-            ProjectConnection.sqlConn.Open();
-            reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                comboBox2.Items.Add(reader["Наименование"]);
+                comboBox3.Items.Add(reader["Id"]);
             }
             ProjectConnection.sqlConn.Close();
         }
@@ -151,12 +133,13 @@ namespace BeautySalon
             string fullPath = Path.Combine(exeFolderPath, relativePath);
             string fullPath1 = Path.Combine(exeFolderPath1, relativePath1);
 
-            var service = comboBox2.Text;
+
+            var service = textBox5.Text;
             var data1 = dateTimePicker1.Value.ToShortDateString();
             var price = textBox1.Text;
             var sale = textBox2.Text;
             var itog = textBox4.Text;
-            var IdClient = comboBox1.Text;
+            var IdClient = textBox3.Text;
             var wordApp = new Microsoft.Office.Interop.Word.Application();
             wordApp.Visible = false;
             try
@@ -202,49 +185,6 @@ namespace BeautySalon
 
         }
 
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ProjectConnection NewConnection = new ProjectConnection();
-            NewConnection.Connection_Today();
-            ProjectConnection.sqlConn.Open();
-            comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            cmd = new SqlCommand("SELECT * FROM Service WHERE Наименование = @Name", ProjectConnection.sqlConn);
-            cmd.Parameters.AddWithValue("@Name", comboBox2.Text);
-            reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                string price = reader["Цена (₽)"].ToString();
-                textBox1.Text = price;
-            }
-            ProjectConnection.sqlConn.Close();
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ProjectConnection NewConnection = new ProjectConnection();
-            NewConnection.Connection_Today();
-            ProjectConnection.sqlConn.Open();
-            comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            cmd = new SqlCommand("SELECT * FROM Clients WHERE Id = @Id", ProjectConnection.sqlConn);
-            cmd.Parameters.AddWithValue("@Id", comboBox1.Text);
-            reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                string sail = reader["Скидка (%)"].ToString();
-                textBox2.Text = sail;
-            }
-            if (textBox2.Text == "0")
-            {
-
-                textBox2.Visible = false;
-            }
-            else
-            {
-                textBox2.Visible = true;
-            }
-            ProjectConnection.sqlConn.Close();
-        }
-
         private void ServicePayment_FormClosed(object sender, FormClosedEventArgs e)
         {
             System.Windows.Forms.Application.Exit();
@@ -253,8 +193,8 @@ namespace BeautySalon
         private void ServicePayment_Load(object sender, EventArgs e)
         {
             populate();
-            populateService();
-            populateClient();
+            populateRec();
+            ClearControls();
             if (MyConnection.type == "M")
             {
                 toolStripMenuItem7.Visible = false;
@@ -263,9 +203,10 @@ namespace BeautySalon
             if (MyConnection.type == "K")
             {
                 toolStripMenuItem7.Visible = false;
-                toolStripMenuItem4.Visible = false;
             }
         }
+
+
 
         private void button4_Click(object sender, EventArgs e)
         {
@@ -297,18 +238,45 @@ namespace BeautySalon
             {
                 DataGridViewRow row = dataGridView2.Rows[e.RowIndex];
                 Id = Convert.ToInt32(row.Cells[0].Value.ToString());
-                comboBox1.Text = row.Cells[1].Value.ToString();
-                comboBox2.Text = row.Cells[2].Value.ToString();
-                dateTimePicker1.Value = Convert.ToDateTime(row.Cells[3].Value.ToString());
-                textBox4.Text = row.Cells[4].Value.ToString();
+                comboBox3.Text = row.Cells[1].Value.ToString();
+                textBox3.Text = row.Cells[2].Value.ToString();
+                textBox5.Text = row.Cells[3].Value.ToString();
+                dateTimePicker1.Value = Convert.ToDateTime(row.Cells[4].Value.ToString());
 
+            }
+        }
+
+        private void IfKol0()
+        {
+            using (SqlConnection connection = new SqlConnection("Data Source=WUQLY\\SQLEXPRESS;Initial Catalog=BeautySalonDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True"))
+            {
+                try
+                {
+                    // Устанавливаем соединение с базой данных
+                    connection.Open();
+
+                    // SQL-запрос для обновления данных
+                    string query = "DELETE a FROM Records AS a INNER JOIN ServicePayment AS b ON a.Id = b.[ID Записи]";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        // Выполняем запрос к БД
+                        int rowsAffected = command.ExecuteNonQuery();
+                        // Проверяем, что запрос на обновление коснулся рядов
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // В случае ошибки выводим сообщение
+                    MessageBox.Show($"Ошибка: {ex.Message}");
+                    return;
+                }
             }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(comboBox1.Text)
-                || string.IsNullOrWhiteSpace(comboBox2.Text)
+            if (string.IsNullOrWhiteSpace(comboBox3.Text)
                 || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
                 || string.IsNullOrWhiteSpace(textBox4.Text))
             {
@@ -318,17 +286,20 @@ namespace BeautySalon
                 return;
             }
 
-            if (comboBox1.Text != ""
+            if (comboBox3.Text != ""
               || dateTimePicker1.Text != ""
-              || comboBox2.Text != ""
-              || textBox4.Text != "")
+              || textBox5.Text != ""
+              || textBox4.Text != ""
+              || textBox1.Text != ""
+              || textBox2.Text != "")
             {
                 ProjectConnection NewConnection = new ProjectConnection();
                 NewConnection.Connection_Today();
-                SqlCommand com = new SqlCommand("INSERT INTO ServicePayment ([ID Клиента],Услуги, Дата, Итог) VALUES (@ClientID, @Service, @Date, @Itog)", ProjectConnection.sqlConn);
+                SqlCommand com = new SqlCommand("INSERT INTO ServicePayment ([ID Записи], [ID Клиента],Услуга, Дата, Итог) VALUES (@RecId, @ClientID, @Service, @Date, @Itog)", ProjectConnection.sqlConn);
                 ProjectConnection.sqlConn.Open();
-                com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
-                com.Parameters.AddWithValue("@Service", comboBox2.Text);
+                com.Parameters.AddWithValue("@RecId", comboBox3.Text);
+                com.Parameters.AddWithValue("@ClientID", textBox3.Text);
+                com.Parameters.AddWithValue("@Service", textBox5.Text);
                 com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
                 com.Parameters.AddWithValue("@Itog", textBox4.Text);
                 com.ExecuteNonQuery();
@@ -343,58 +314,12 @@ namespace BeautySalon
             {
                 MessageBox.Show("Произошла ошибка");
             }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(comboBox1.Text)
-                || string.IsNullOrWhiteSpace(comboBox2.Text)
-                || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
-                || string.IsNullOrWhiteSpace(textBox4.Text))
-            {
-                MessageBox.Show("Есть незаполненные поля",
-                                "Ошибка ввода", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                return;
-            }
-
-            DialogResult dialogResult = MessageBox.Show("Вы хотите отредактировать запись?",
-                    "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-            if (dialogResult == DialogResult.Yes)
-            {
-                if (comboBox1.Text != ""
-                    || dateTimePicker1.Text != ""
-                    || comboBox2.Text != ""
-                    || textBox4.Text != "")
-                {
-                    ProjectConnection NewConnection = new ProjectConnection();
-                    NewConnection.Connection_Today();
-                    ProjectConnection.sqlConn.Open();
-                    SqlCommand com = new SqlCommand("UPDATE ServicePayment set [ID Клиента] = @ClientID, Услуги = @Service, Дата = @Date, Итог = @Itog where Id = @Id", ProjectConnection.sqlConn);
-                    com.Parameters.AddWithValue("@Id", SqlDbType.Int).Value = Id;
-                    com.Parameters.AddWithValue("@ClientID", comboBox1.Text);
-                    com.Parameters.AddWithValue("@Service", comboBox2.Text);
-                    com.Parameters.AddWithValue("@Date", dateTimePicker1.Text);
-                    com.Parameters.AddWithValue("@Itog", textBox4.Text);
-                    com.ExecuteNonQuery();
-                    ProjectConnection.sqlConn.Close();
-                    populate();
-                    ClearControls();
-                    MessageBox.Show("Вы успешно отредактировали запись",
-                    "Редактирование", MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-                }
-                else if (dialogResult == DialogResult.No)
-                {
-                    return;
-                }
-            }
+            IfKol0();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(comboBox1.Text)
-                || string.IsNullOrWhiteSpace(comboBox2.Text)
+            if (string.IsNullOrWhiteSpace(comboBox3.Text)
                 || string.IsNullOrWhiteSpace(dateTimePicker1.Text)
                 || string.IsNullOrWhiteSpace(textBox4.Text))
             {
@@ -429,6 +354,7 @@ namespace BeautySalon
             {
                 return;
             }
+            
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
@@ -547,6 +473,57 @@ namespace BeautySalon
                     }
                 }
             }
+        }
+
+        private void типУслугиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TypeOfProd TP = new TypeOfProd();
+            this.Hide();
+            TP.Show();
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ProjectConnection NewConnection = new ProjectConnection();
+            NewConnection.Connection_Today();
+            ProjectConnection.sqlConn.Open();
+            comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            SqlCommand cmd = new SqlCommand("SELECT Наименование FROM Service", ProjectConnection.sqlConn);
+            SqlCommand cmdRec = new SqlCommand("SELECT * FROM Records WHERE Id = @Id", ProjectConnection.sqlConn);
+            SqlCommand cmdClient = new SqlCommand("SELECT [Скидка (%)] FROM Clients", ProjectConnection.sqlConn);
+            cmdRec.Parameters.AddWithValue("@Id", comboBox3.Text);
+            SqlDataReader reader = cmd.ExecuteReader();
+            SqlDataReader readerCl = cmdClient.ExecuteReader();
+            SqlDataReader readerRec = cmdRec.ExecuteReader();
+            while (reader.Read() && readerCl.Read() && readerRec.Read())
+            {
+                string client = readerRec["ID Клиента"].ToString();
+                string service = readerRec["Услуга"].ToString();
+                string price = readerRec["Цена (₽)"].ToString();
+                string date = readerRec["Дата"].ToString();
+                string sail = readerCl["Скидка (%)"].ToString();
+                dateTimePicker1.Text = date;
+                textBox3.Text = client;
+                textBox5.Text = service;
+                textBox1.Text = price;
+                textBox2.Text = sail;
+
+            }
+            if (textBox2.Text == "0")
+            {
+
+                textBox2.Visible = false;
+            }
+            else
+            {
+                textBox2.Visible = true;
+            }
+            ProjectConnection.sqlConn.Close();
         }
     }
 }
